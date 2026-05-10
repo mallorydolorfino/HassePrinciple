@@ -112,7 +112,7 @@ We now specialize to the case where $k$ is either $\R$ or $\Q_p$ for some prime 
 	\lean{real}
 	\uses{def:Hilbert_symbol}
 	\leanok
-	Let $a, b \in \R^\times$. Then $(a, b)_\R = 1$ if and only if $a > 0$ or $b > 0$; otherwise $(a, b)_\R = -1$.
+	Let $a, b \in \R^\times$. Then $(a, b)_{\R} = 1$ if and only if $a > 0$ or $b > 0$; otherwise $(a, b)_{\R} = -1$.
 \end{theorem}
 
 The following uses the \code{mathlib} code for $p$-adic numbers and integers, as well as the
@@ -269,7 +269,7 @@ $(a,b)_{\Q_p}$ computed in $\Q_p$.
 	\lean{at_infty}
 	\uses{def:Hilbert_symbol}
 	\leanok
-Let $a, b \in \Q^\times$. We define $(a, b)_\infty$ as the Hilbert symbol $(a,b)_\R$ computed in $\R$.
+Let $a, b \in \Q^\times$. We define $(a, b)_\infty$ as the Hilbert symbol $(a,b)_{\R}$ computed in $\R$.
 \end{definition}
 
 \begin{theorem}
@@ -292,7 +292,7 @@ In order to state the product formula, it is convenient to introduce the followi
 	\leanok
 Let $a, b \in \Q^\times$. The Hilbert symbol function of the pair $(a,b)$ is
 \[
-\rm{hylbertSym\_fun}: \N \to \Z^\times
+\rm{hilbertSym\_fun}: \N \to \Z^\times
 \]
 sending each $n$ to the Hilbert symbol of the pair $(a,b)$ at the $n$-th prime.
 \end{definition}
@@ -306,7 +306,7 @@ By Theorem \ref{thm:almost_all_one}, this function has finite support.
 	\leanok
 Let $a, b \in \Q^\times$. The support of the Hilbert symbol function of the pair $(a,b)$ is
 \[
-\rm{hylbertSym\_support}(a, b) := \{n \in \N \mid \ hilbertSym\_fun(a, b)(n) \neq 1\}.
+\rm{hilbertSym\_support}(a, b) := \{n \in \N \mid \ hilbertSym\_fun(a, b)(n) \neq 1\}.
 \]
 \end{definition}
 
@@ -342,7 +342,7 @@ space.
 	\lean{Prod_over_S}
 	\leanok
 Let $S$ be a finite subset of the set of prime numbers. We denote by $\prod_{p \in S} \Q_p$
-the product of the fields $\Q_p$ for $p \in S$. The set $\rm{Prod\_over\_S} S$ is defined as the
+the product of the fields $\Q_p$ for $p \in S$. The set $\rm{Prod\_over\_S} (S)$ is defined as the
 product of $\R$ and the factors $\Q_p$ for $p \in S$.
 \end{definition}
 
@@ -355,14 +355,14 @@ over the $n$-th prime for $n \in S$.
 	\lean{finite_embedding}
 	\uses{def:Prod_over_S}
 	\leanok
-We define the finite embedding of $\Q$ into $\rm{Prod\_over\_S} S$ as the natural diagonal map.
+We define the finite embedding of $\Q$ into $\rm{Prod\_over\_S} (S)$ as the natural diagonal map.
 \end{definition}
 
 \begin{theorem}\label{thm:approximation}%todo change references
 	\lean{approximation}
 	\uses{def:Prod_over_S}
-	The image of the finite embedding of $\Q$ into $\rm{Prod\_over\_S} S$ is dense with respect to
+	The image of the finite embedding of $\Q$ into $\rm{Prod\_over\_S} (S)$ is dense with respect to
 	the product topology. More concretely, for every $\epsilon > 0$ and every
-	$y \in \rm{Prod\_over\_S} S$, there exists $x \in \Q$ such that the distance
+	$y \in \rm{Prod\_over\_S} (S)$, there exists $x \in \Q$ such that the distance
 	between $y$ and the image of $x$ is less than $\epsilon$.
 \end{theorem}
