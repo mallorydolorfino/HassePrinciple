@@ -67,17 +67,17 @@ lemma represents_zero_iff_isotropic {Q : QuadraticForm R V} :
   sorry
 
 -- Condition (ii) seems annoying to state, can we avoid it?
-lemma represents_iff_sub_isotropic {Q : QuadraticForm R V} (hQ : Q.Isotropic)
+lemma represents_iff_sub_isotropic [Module.Free R V] {Q : QuadraticForm R V} (hQ : Q.Isotropic)
     (hQ' : Q.Nondegenerate) (r : Rˣ) :
     Q.represents r ↔
       (Q.prod (QuadraticMap.weightedSumSquares R ![-r])).Isotropic := sorry
 
-lemma prod_isotropic_iff {Q : QuadraticForm R V} (hQ : Q.Nondegenerate) {Q' : QuadraticForm R W}
-    (hQ' : Q'.Nondegenerate) :
+lemma prod_isotropic_iff [Module.Free R V] [Module.Free R W] {Q : QuadraticForm R V}
+    (hQ : Q.Nondegenerate) {Q' : QuadraticForm R W} (hQ' : Q'.Nondegenerate) :
     (Q.prod Q').Isotropic ↔ ∃ r : Rˣ, Q.represents r ∧ Q'.represents r := sorry
 
-lemma prod_isotropic_iff' {Q : QuadraticForm R V} (hQ : Q.Nondegenerate) {Q' : QuadraticForm R W}
-    (hQ' : Q'.Nondegenerate) :
+lemma prod_isotropic_iff' [Module.Free R V] [Module.Free R W] {Q : QuadraticForm R V}
+    (hQ : Q.Nondegenerate) {Q' : QuadraticForm R W} (hQ' : Q'.Nondegenerate) :
     (Q.prod Q').Isotropic ↔ ∃ r : Rˣ,
       (Q.prod (QuadraticMap.weightedSumSquares R ![-r])).Isotropic ∧
       (Q'.prod (QuadraticMap.weightedSumSquares R ![-r])).Isotropic := sorry
