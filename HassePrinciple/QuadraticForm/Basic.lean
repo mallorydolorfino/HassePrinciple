@@ -35,6 +35,7 @@ def IsHyperbolic (Q : QuadraticForm R V) : Prop :=
 
 -- If needed for any particular result, replace `[CommRing R]` by `[Field R]`.
 
+/-- The quadratic form `XY` on a two dimensional free `R`-module. -/
 noncomputable abbrev XY (b : Basis (Fin 2) R V) : QuadraticForm R V where
   toFun v := b.repr v 0 * b.repr v 1
   toFun_smul r v := sorry
@@ -53,6 +54,8 @@ noncomputable abbrev XY (b : Basis (Fin 2) R V) : QuadraticForm R V where
 lemma XY_isHyperbolic (b : Basis (Fin 2) R V) :
     IsHyperbolic (XY b) := sorry
 
+/-- `Q : QuadraticForm R V` represents `r : R` if there exists a nonzero `x : V` such that
+  `Q x = 0`. -/
 def represents (Q : QuadraticForm R V) (r : R) : Prop :=
   ∃ x : V, Q x = r ∧ x ≠ 0
 
