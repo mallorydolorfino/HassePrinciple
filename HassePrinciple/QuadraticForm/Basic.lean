@@ -53,12 +53,12 @@ noncomputable abbrev XY (b : Basis (Fin 2) R V) : QuadraticForm R V where
 lemma XY_isHyperbolic (b : Basis (Fin 2) R V) :
     IsHyperbolic (XY b) := sorry
 
+def represents (Q : QuadraticForm R V) (r : R) : Prop :=
+  ∃ x : V, Q x = r ∧ x ≠ 0
+
 lemma equivalent_hyperbolic_add {Q : QuadraticForm R V} (hQ : Q.Isotropic)
     (hQ' : Q.Nondegenerate) (r : R) :
     ∃ (A B : QuadraticForm R V), A.IsHyperbolic ∧ Q.Equivalent (A + B) := sorry
-
-def represents (Q : QuadraticForm R V) (r : R) : Prop :=
-  ∃ x : V, Q x = r ∧ x ≠ 0
 
 lemma represents_of_isotropic_of_nondegenerate {Q : QuadraticForm R V} (hQ : Q.Isotropic)
     (hQ' : Q.Nondegenerate) (r : R) :
