@@ -25,8 +25,12 @@ noncomputable def _root_.HilbertSymbol (a b : kˣ) : ℤˣ := by
   z ^ 2 - a * x ^ 2 - b * y ^ 2 = 0 then 1 else -1
 
 /-- TODO -/
-lemma well_defined_up_to_squares (a b a' b' : kˣ) :
-    HilbertSymbol a b = HilbertSymbol (a * a' ^ 2) (b * b' ^ 2)  := by
+lemma well_defined_up_to_squares (a b a' b' : kˣ) : HilbertSymbol a b = HilbertSymbol
+  (a * a'^2) (b * b'^2) := by
+  sorry
+
+/-- TODO -/
+lemma sym (a b : kˣ) : HilbertSymbol a b = HilbertSymbol b a := by
   sorry
 
 /-
@@ -47,7 +51,6 @@ theorem symm (a b : kˣ) : HilbertSymbol a b = HilbertSymbol b a := by
   sorry
 
 /-- TODO -/
-@[simp]
 theorem one_of_square (a c : kˣ) : HilbertSymbol a (c ^ 2) = 1 := by
   sorry
 
@@ -85,12 +88,13 @@ theorem real (a b : ℝˣ) : HilbertSymbol a b = if (0 : ℝ) < a ∨ (0 : ℝ) 
   sorry
 
 open Padic
-/-- ε(u) is the class modulo 2 of (u-1)/2. -/
-def ε (u : (PadicInt 2)ˣ) : ZMod 2 :=
+
+/-- epsilon(u) is the class modulo 2 of (u-1)/2. -/
+def epsilon (u : (PadicInt 2)ˣ) : ZMod 2 :=
   if (u.val).appr 2 % 4 = 1 then 0 else 1
 
-/-- ω(u) is the class modulo 2 of (u^2-1)/8. -/
-def ω (u : (PadicInt 2)ˣ) : ZMod 2 :=
+/-- omega(u) is the class modulo 2 of (u^2-1)/8. -/
+def omega (u : (PadicInt 2)ˣ) : ZMod 2 :=
   let u_mod_8 := (u.val).appr 3 % 8
   if u_mod_8 = 1 ∨ u_mod_8 = 7 then 0 else 1
 
@@ -122,7 +126,7 @@ lemma padic_odd_p_case00 {p : ℕ} [hp : Fact (Nat.Prime p)] (hp2 : p ≠ 2) (x 
     let p_in_Q2 := p_in_Q2 hp2
     let legpx := legp u_x
     let legpy := legp u_y
-    (-1) ^ (v_x * v_y * ε (p_in_Q2 : ℤ_[2]ˣ)) * legpx * legpy := by
+    (-1) ^ (v_x * v_y * epsilon (p_in_Q2 : ℤ_[2]ˣ)) * legpx * legpy := by
   sorry
 
 /-- TODO -/
@@ -136,7 +140,7 @@ lemma padic_odd_p_case10 {p : ℕ} [hp : Fact (Nat.Prime p)] (hp2 : p ≠ 2) (x 
     let p2 := p_in_Q2 hp2
     let legpx := legp u_x
     let legpy := legp u_y
-    (-1) ^ (v_x * v_y * ε (p2 : ℤ_[2]ˣ)) * legpx * legpy := by
+    (-1) ^ (v_x * v_y * epsilon (p2 : ℤ_[2]ˣ)) * legpx * legpy := by
   sorry
 
 /-- TODO -/
@@ -150,7 +154,7 @@ lemma padic_odd_p_case11 {p : ℕ} [hp : Fact (Nat.Prime p)] (hp2 : p ≠ 2) (x 
     let p2 := p_in_Q2 hp2
     let legpx := legp u_x
     let legpy := legp u_y
-    (-1) ^ (v_x * v_y * ε (p2 : ℤ_[2]ˣ)) * legpx * legpy := by
+    (-1) ^ (v_x * v_y * epsilon (p2 : ℤ_[2]ˣ)) * legpx * legpy := by
   sorry
 
 /-- TODO -/
@@ -163,7 +167,7 @@ theorem padic_odd_p {p : ℕ} [hp : Fact (Nat.Prime p)] (hp2 : p ≠ 2) (x y : (
     let p2 := p_in_Q2 hp2
     let legpx := legp u_x
     let legpy := legp u_y
-    (-1) ^ (v_x * v_y * ε (p2 : ℤ_[2]ˣ)) * legpx * legpy := by
+    (-1) ^ (v_x * v_y * epsilon (p2 : ℤ_[2]ˣ)) * legpx * legpy := by
   sorry
 
 /-- TODO -/
@@ -174,7 +178,7 @@ lemma padic_2_case00 (x y : (ℚ_[2])ˣ) (hα0 : valuation (x : ℚ_[2]) = 0)
     let v_y := valuation (y : ℚ_[2])
     let u_x := padicUnitPart x
     let u_y := padicUnitPart y
-    (-1) ^ (ε u_x * ε u_y + v_x * ω u_y + v_y * ω u_x) := by
+    (-1) ^ (epsilon u_x * epsilon u_y + v_x * omega u_y + v_y * omega u_x) := by
   sorry
 
 /-- TODO -/
@@ -185,7 +189,7 @@ lemma padic_2_case10 (x y : (ℚ_[2])ˣ) (hα0 : valuation (x : ℚ_[2]) = 1)
     let v_y := valuation (y : ℚ_[2])
     let u_x := padicUnitPart x
     let u_y := padicUnitPart y
-    (-1) ^ (ε u_x * ε u_y + v_x * ω u_y + v_y * ω u_x) := by
+    (-1) ^ (epsilon u_x * epsilon u_y + v_x * omega u_y + v_y * omega u_x) := by
   sorry
 
 /-- TODO -/
@@ -196,7 +200,7 @@ lemma padic_2_case11 (x y : (ℚ_[2])ˣ) (hα0 : valuation (x : ℚ_[2]) = 1)
     let v_y := valuation (y : ℚ_[2])
     let u_x := padicUnitPart x
     let u_y := padicUnitPart y
-    (-1) ^ (ε u_x * ε u_y + v_x * ω u_y + v_y * ω u_x) := by
+    (-1) ^ (epsilon u_x * epsilon u_y + v_x * omega u_y + v_y * omega u_x) := by
   sorry
 
 /-- TODO -/
@@ -206,7 +210,7 @@ theorem padic_2 (x y : (ℚ_[2])ˣ) :
     let v_y := valuation (y : ℚ_[2])
     let u_x := padicUnitPart x
     let u_y := padicUnitPart y
-    (-1) ^ (ε u_x * ε u_y + v_x * ω u_y + v_y * ω u_x) := by
+    (-1) ^ (epsilon u_x * epsilon u_y + v_x * omega u_y + v_y * omega u_x) := by
   sorry
 
 
