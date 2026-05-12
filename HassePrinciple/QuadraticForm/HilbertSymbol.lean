@@ -47,7 +47,7 @@ theorem eq_one_iff (a b : kˣ) : HilbertSymbol a b = 1 ↔ ∃ t : kb b, a =
   sorry
 
 /-- TODO -/
-theorem symm (a b : kˣ) : HilbertSymbol a b = HilbertSymbol b a := by
+theorem comm (a b : kˣ) : HilbertSymbol a b = HilbertSymbol b a := by
   sorry
 
 /-- TODO -/
@@ -80,7 +80,7 @@ theorem of_minus_self_mul (a b : kˣ) (h : (1 : k) - a ≠ 0) :
   sorry
 
 /-
-# Computation of the Hilbert symbol in the real and p-adic cases
+# Local Properties --Computation of the Hilbert symbol in the real and p-adic cases
 -/
 
 /-- TODO -/
@@ -286,5 +286,7 @@ theorem approximation (S : Finset ℕ) : ∀ ε > 0, ∀ y : Prod_over_S S, ∃ 
 /-
 these two are "lemmas" to prove existence of rational numbers with given HS. Do we need that too?
 -/
+/-- TODO -/
+theorem existence : true := by sorry
 
 end HilbertSymbol
