@@ -120,7 +120,7 @@ The forward implication is clear. For the second one, fix a basis for $V$ and as
 \end{proof}
 
 \begin{corollary}\label{cor:prod_isotropic_iff}
-\lean{QuadraticForm.prod_isotropic_iff, QuadraticForm.prod_isotropic_iff}
+\lean{QuadraticForm.prod_isotropic_iff, QuadraticForm.prod_isotropic_iff'}
 \leanok
 Let $K$ be a field and $Q$ and $Q'$ be nondegenerate quadratic forms over $K$ of rank at least $1$. Then the following properties are equivalent:
 \begin{enumerate}[a)]
@@ -181,6 +181,21 @@ For every quadratic form $f$, we have $\epsilon(f) = \pm 1$.
 \end{lemma}
 \begin{proof}
 Each term in the product is equal to $\pm 1$.
+\end{proof}
+
+\begin{lemma}\label{lem:represents_zero_iff_rk_3}
+	\uses{def:HM_inv}
+	Let $k$ be either $\Q_p$ or $\R$. Let $f$ be a quadratic form of rank $2$ over $k$, and let $a \in k^\times / {k^\times}^2$. Then $f$ represents $a$ if and only if $(a, -d(f)) = \epsilon(f)$.
+\end{lemma}
+
+\begin{lemma}\label{lem:represents_iff_rk_2}
+\uses{def:HM_inv}
+Let $k$ be either $\Q_p$ or $\R$. Let $f$ be a quadratic form of rank $2$ over $k$, and let $a \in k^\times / {k^\times}^2$. Then $f$ represents $a$ if and only if $(a, -d(f)) = \epsilon(f)$.
+\end{lemma}
+\begin{proof}
+Up to equivalence, we may assume $f = X^2 + bY^2$ for some $b \in k^\times$. By Corollary \ref{cor:prod_isotropic_iff}, $f$ represents $a$ if and only if $f_a := f \dotminus aZ^2$ represents $0$, which by Lemma \ref{lem:represents_zero_iff_rk_3} is equivalent to $(-1, -d(f_a)) = \epsilon(f_a)$.
+
+A computation shows that $d(f_a) = -a d(f)$ and $\epsilon(f_a) = (a, -d(f)) \epsilon (f)$. Combining this with \textcolor{red}{TODO: III Prop 2}, we conclude the result.
 \end{proof}
 
 \section{Hasse--Minkowski}\label{sec:Hasse--Minkowski}
@@ -297,17 +312,27 @@ Write $b' = b'' u^2$, with $b'', u$ integers and $b''$ square-free, so $|b''| < 
 
 \begin{lemma}\label{lem:isotr_of_rk_four}
 	\lean{QuadraticForm.EverywhereLocallyIsotropic.isotropic_of_rank_four}
-	\uses{def:everywhere_locally_isotropic, lem:equiv_sum_squares}
+	\uses{def:everywhere_locally_isotropic, lem:equiv_sum_squares, cor:prod_isotropic_iff, thm:product_formula,
+	cor:represents_iff, lem:isotr_of_rk_three}
 	\leanok
 	Let $f$ be a quadratic form over $\Q$ of rank four which is everywhere locally isotropic. Then $f$ is isotropic.
 \end{lemma}
 \begin{proof}
-	
+Up to equivalence, we may assume $f = aX_1^2 + bX_2^2 - (cX_3^2 + dX_4^2)$. Fix a place $v \in V$. Since $f_v$ represents $0$, Corollary \ref{cor:prod_isotropic_iff} shows that there exists $x_v \in \Q_v^\times$ which is represented both by $aX_1^2 + bX_2^2$ and by  $cX_3^2 + dX_4^2$.
+
+%By Corollary \textcolor{red}{TODO} when $v=p$, and Lemma \textcolor{red}{TODO} when $v= \infty$, this is equivalent to saying that 
+By Lemma \textcolor{red}{TODO}, this is equivalent to saying that 
+\[ (x_v, -ab)_v = (a, b)_v \quad \text{and} \quad (x_v, -cd)_v = (c, d)_v \: \text{ for all } v \in V. \]
+
+Since $\displaystyle \prod_{v \in V} (a, b)_v = \prod_{v \in V} (c, d)_v = 1$ by Theorem \ref{thm:product_formula}, we can deduce from \textcolor{red}{TODO} the existence of $x \in \Q^\times$ such that 
+\[ (x, -ab)_v = (a, b)_v \quad \text{and} \quad (x, -cd)_v = (c, d)_v \: \text{ for all } v \in V. \]
+
+This shows that the form $aX_1^2 + bX_2^2 - xZ^2$ represents zero in each $\Q_v$, so by Lemma \ref{lem:isotr_of_rk_three}, it also represents $0$ in $\Q$. By Corollary \ref{cor:represents_iff}, $x$ is represented by $aX_1^2 + bX_2^2$. The same argument shows that $x$ is represented by $cX_1^2 + dX_2^2$. By applying Corollary \ref{cor:prod_isotropic_iff} again, we conclude that $f$ represents $0$.
 \end{proof}
 
 \begin{lemma}\label{lem:isotr_of_five_le_rk}
 	\lean{QuadraticForm.EverywhereLocallyIsotropic.isotropic_of_five_le_rank}
-	\uses{def:everywhere_locally_isotropic, lem:equiv_sum_squares, thm:padic_squares_open, lem:approx_thm, def:HM_inv}
+	\uses{def:everywhere_locally_isotropic, lem:equiv_sum_squares, thm:padic_squares_open, lem:approx_thm, def:HM_inv, lem:isotr_of_rk_four}
 	\leanok
 	Let $f$ be a quadratic form over $\Q$ of rank $n \ge 5$ which is everywhere locally isotropic. Then $f$ is isotropic.
 \end{lemma}
