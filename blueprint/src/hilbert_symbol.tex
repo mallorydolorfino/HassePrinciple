@@ -376,7 +376,7 @@ We define the finite embedding of $\Q$ into $\rm{Prod\_over\_S} (S)$ as the natu
 	\lean{HilbertSymbol.existence}
 	\uses{def:Hilbert_symbol, def:at_p, def:at_infty}
 	\leanok
-	Let $(a_i)_{i \in \I}$ be a finite family of nonzero rational numbers, and let
+	Let $(a_i)_{i \in I}$ be a finite family of nonzero rational numbers, and let
 	$e_{i,v} \in \{\pm 1\}$ for each $i \in I$ and each place $v$ of $\Q$. There exists a rational
 	number $x \in \Q^\times$ such that
 	\[
@@ -391,5 +391,6 @@ We define the finite embedding of $\Q$ into $\rm{Prod\_over\_S} (S)$ as the natu
 \end{theorem}
 
 \begin{proof}
+	\uses{def:Hilbert_symbol, def:at_p, def:at_infty, thm:chineseRemainder, thm:approximation}
 TODO: necessity uses product formula, sufficiency uses the theorems in this section.
 \end{proof}
