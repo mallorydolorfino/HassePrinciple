@@ -157,11 +157,17 @@ For the proof, we will need the following lemma.
 	\leanok
 Let $p$ be a prime and let $v \in (\Q_p)^\times$. Let $x, y, z \in \Q_p$ be such that
 $(x, y, z) \ne (0, 0, 0)$ and $z^2 - p x^2 - v y^2 = 0$. Then there exist
-$z', y' \in (\Q_p)^\times$ and $x' \in \Z_p$ such that $(z', y', x')$ is a nontrivial solution to
+$z', y' \in (\Z_p)^\times$ and $x' \in \Z_p$ such that $(z', y', x')$ is a nontrivial solution to
 the same equation.
 \end{lemma}
 \begin{proof}
-	TODO
+	Let $(x,y,z)$ be any nontrivial solution. For any $\lambda \ne 0$, also $(\lambda x, \lambda y,
+	\lambda z)$ is a solution. Taking $\lambda = p^a$ for an appropriate $a$, we can assume that
+	$x,y,z$ are all in $\Z_p$ and at least one of them is a unit. Now, if $z$ is not a unit, then
+	$px^2+vy^2$ is also not a unit, thus $y$ is not a unit. Conversely if $y$ is not a unit, then
+	$z^2-px^2$ is also not a unit, thus $z$ is not a unit. This shows that if eithe $y$ or $z$ is not
+	a unit, then they are both non units, but then $p^2$ would divide $px^2$, hence $x$ would not be a
+	unit either, contradicting the fact that one of $x,y,z$ is a unit.
 \end{proof}
 
 We are now ready to compute the Hilbert symbol $(x,y)$ in the $p$-adic case.
@@ -184,7 +190,25 @@ where $\left(\dfrac{\cdot}{p}\right)$ is the Legendre symbol.
 
 \begin{proof}
 	\uses{lem:nontrivialzero, prop:hilbert_symbol_properties}
-	TODO
+	Since the Hilbert symbol is well defined up to squares, we can assume that $v_x, v_y \in \{0, 1\}$.
+	\begin{itemize}
+		\item Suppose $v_x=v_y=0$. Then $x=u_x$ and $y=u_y$ are units. By the theorem of Chevalley--Warning,
+		the equation $z^2 = u_x x^2 + u_y y^2$ has a nontrivial solution in $\F_p$, so it has a
+		nontrivial solution in $\Q_p$, so $(x,y)=1$. Note: Chevalley--Warning is in \code{mathlib} as
+		\code{char_dvd_card_solutions}, in \code{Mathlib.FieldTheory.ChevalleyWarning}. We may need a
+		multivariate Hensel's lemma for the lifting part.
+		\item Suppose $v_x=1$ and $v_y=0$. Then $x=p u_x$ and $y=u_y$. Since by the previous case, we
+		have $(u_x, u_y)=1$, we have $(x,y) = (p u_x, u_y) = (p, u_y)$. We just need to show that this is
+		equal to $\left(\dfrac{u_y}{p}\right)$. Observe that a unit is a square in $\Q_p$ if and only if
+		it is a square modulo $p$. Now, if $u_y$ is a square, then both terms are $1$, see
+		\ref{prop:hilbert_symbol_properties}. Otherwise, both terms are $-1$. In fact,
+		if $z^2-p^2x^2-u_yy^2$ has a nontrivial solution, we can assume that $z$ and $u_y$ are units, so
+		we can reduce modulo $p$ to get $u_y = (zy^{-1})^2$, which is a contradiction.
+		\item Suppose $v_x=v_y=1$. Then $x=p u_x$ and $y=p u_y$. This case follows from the properties of
+		the Hilbert symbol and the previous case: $(pu_x,pu_y)=(pu_x, -p^2u_xu_y)= (pu_x, -u_xu_y)=
+		\left(\dfrac{-u_xu_y}{p}\right)$. By the properties of the Legendre symbol, this is equal to
+		$\left(\dfrac{-1}{p}\right)\left(\dfrac{u_x}{p}\right)\left(\dfrac{u_y}{p}\right)$, as claimed.
+	\end{itemize}
 \end{proof}
 
 We proceed similarly for the case $p = 2$.

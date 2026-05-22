@@ -106,7 +106,7 @@ def omega (u : (PadicInt 2)ˣ) : ℤ :=
 
 --better name?
 /-- TODO -/
-lemma exists_nontrivial_zero {p : ℕ} [hp : Fact (Nat.Prime p)] (v : (ℚ_[p])ˣ) (z x y : ℚ_[p])
+private lemma exists_nontrivial_zero {p : ℕ} [hp : Fact (Nat.Prime p)] (v : (ℚ_[p])ˣ) (z x y : ℚ_[p])
     (hnontriv : (x, y, z) ≠ (0, 0, 0)) (hsol : z ^ 2 - p * x ^ 2 - v * y ^ 2 = 0) : ∃ z' y' :
     (ℚ_[p])ˣ, ∃ x' : ℤ_[p], (z' : ℚ_[p])^2 - p * (x' : ℚ_[p])^2 - v * (y' : ℚ_[p])^2 = 0 := by
   sorry
