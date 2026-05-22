@@ -106,7 +106,7 @@ def omega (u : (PadicInt 2)ˣ) : ℤ :=
 
 --better name?
 /-- TODO -/
-private lemma exists_nontrivial_zero {p : ℕ} [hp : Fact (Nat.Prime p)] (v : (ℚ_[p])ˣ) (z x y : ℚ_[p])
+lemma exists_nontrivial_zero {p : ℕ} [hp : Fact (Nat.Prime p)] (v : (ℚ_[p])ˣ) (z x y : ℚ_[p])
     (hnontriv : (x, y, z) ≠ (0, 0, 0)) (hsol : z ^ 2 - p * x ^ 2 - v * y ^ 2 = 0) : ∃ z' y' :
     (ℚ_[p])ˣ, ∃ x' : ℤ_[p], (z' : ℚ_[p])^2 - p * (x' : ℚ_[p])^2 - v * (y' : ℚ_[p])^2 = 0 := by
   sorry
@@ -176,10 +176,10 @@ open Nat
 
 /-- For a, b in ℚ, and for all places of ℚ, we define the Hilbert symbol of a and b at that
 place. -/
-def at_p (a b : ℚ) (p : ℕ) [hp : Fact (Nat.Prime p)] : ℤ := HilbertSymbol (a : ℚ_[p]) (b : ℚ_[p])
+abbrev at_p (a b : ℚ) (p : ℕ) [hp : Fact (Nat.Prime p)] : ℤ := HilbertSymbol (a : ℚ_[p]) (b : ℚ_[p])
 
 /-- TODO -/
-def at_infty (a b : ℚ) : ℤ := HilbertSymbol (a : ℝ) (b : ℝ)
+abbrev at_infty (a b : ℚ) : ℤ := HilbertSymbol (a : ℝ) (b : ℝ)
 
 /-- TODO -/
 instance fact_prime_nth_prime (n : ℕ) : Fact (Nat.Prime (Nat.nth Nat.Prime n)) := by

@@ -237,22 +237,11 @@ the symbol $(a, b)_p$ is the Hilbert symbol computed in $\Q_p$, while $(a, b)_\i
 symbol computed in $\R$. Prior to stating the formula, we need to show that the Hilbert
 symbol is $1$ for all but finitely many $v \in V$.
 
-\begin{definition}
-	\label{def:at_p}
-	\lean{HilbertSymbol.at_p}
-	\uses{def:Hilbert_symbol}
-	\leanok
-Let $p$ be a prime number. For $a, b \in \Q^\times$, we define $(a, b)_p$ as the Hilbert symbol
+For the product formula, we introduce the following notation.
+Let $p$ be a prime number. For $a, b \in \Q^\times$, we let $(a, b)_p$ be the Hilbert symbol
 $(a,b)_{\Q_p}$ computed in $\Q_p$.
-\end{definition}
+We moreover let $(a, b)_\infty$ be the Hilbert symbol $(a,b)_{\R}$ computed in $\R$.
 
-\begin{definition}
-	\label{def:at_infty}
-	\lean{HilbertSymbol.at_infty}
-	\uses{def:Hilbert_symbol}
-	\leanok
-Let $a, b \in \Q^\times$. We define $(a, b)_\infty$ as the Hilbert symbol $(a,b)_{\R}$ computed in $\R$.
-\end{definition}
 
 \begin{theorem}
 	\label{thm:almost_all_one}
