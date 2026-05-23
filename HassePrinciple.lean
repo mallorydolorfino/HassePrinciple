@@ -1,8 +1,7 @@
 import HassePrinciple.HilbertSymbol.Basic
 import HassePrinciple.HilbertSymbol.ExistenceTheorem
 import HassePrinciple.NumberTheory.ApproximationTheorem
-import HassePrinciple.Padics.Equations
-import HassePrinciple.Padics.Legendre
+import HassePrinciple.Padics.Aux
 import HassePrinciple.Padics.Squares
 import HassePrinciple.QuadraticForm.Basic
 import HassePrinciple.QuadraticForm.Chain

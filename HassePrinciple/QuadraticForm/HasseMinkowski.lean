@@ -7,6 +7,8 @@ module
 
 public import HassePrinciple.QuadraticForm.HighRank
 
+/-! # The Hasse-Minkowski theorem -/
+
 @[expose] public section
 
 namespace QuadraticForm

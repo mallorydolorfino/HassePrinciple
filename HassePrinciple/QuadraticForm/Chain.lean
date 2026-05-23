@@ -1,6 +1,13 @@
+/-
+Copyright (c) 2026 Nirvana Coppola, María Inés de Frutos-Fernández. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Nirvana Coppola, María Inés de Frutos-Fernández
+-/
 module
 
 public import Mathlib.LinearAlgebra.QuadraticForm.Radical
+
+/-! # Chains of orthogonal bases -/
 
 @[expose] public section
 
@@ -47,7 +54,7 @@ lemma exists_const (hdim : 3 ≤ finrank k V) (hQ : Q.Nondegenerate)
 /-- Let `V` be a vector space of dimension at least `3`, let `Q` be a nondegenerate quadratic form
   on `V` and let `b, b'` be two `Q`-orthogonal bases of `V`. Then there exists a chain from
   `b` to `b'`. -/
-def chain_of_nondegenerate (hdim : 3 ≤ finrank k V) (hQ : Q.Nondegenerate)
+def chainOfNondegenerate (hdim : 3 ≤ finrank k V) (hQ : Q.Nondegenerate)
     {b b' : Basis (Fin (finrank k V)) k V} (hb : Q.associated.IsOrthoᵢ b)
     (hb' : Q.associated.IsOrthoᵢ b') :
     Chain Q b b' := sorry

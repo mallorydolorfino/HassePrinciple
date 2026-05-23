@@ -7,6 +7,8 @@ module
 
 public import HassePrinciple.QuadraticForm.RankFour
 
+/-! # The Hasse-Minkowski theorem for quadratic forms of rank at least 5. -/
+
 @[expose] public section
 
 namespace QuadraticForm.EverywhereLocallyIsotropic

@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2026 Nirvana Coppola, María Inés de Frutos-Fernández. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Nirvana Coppola, María Inés de Frutos-Fernández
+-/
 module
 
 public import HassePrinciple.QuadraticForm.Basic
@@ -7,6 +12,8 @@ public import HassePrinciple.HilbertSymbol.ExistenceTheorem
 public import HassePrinciple.NumberTheory.ApproximationTheorem
 public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 public import Mathlib.Data.Fin.Basic
+
+/-! # The Hasse-Minkowski invariant -/
 
 @[expose] public section
 
@@ -42,12 +49,7 @@ lemma HasseMinkoskiInvariant_aux.eq_of_equivalent {n : ℕ} {w w' : Fin n → k�
 
 variable [FiniteDimensional k V]
 
-example {Q : QuadraticForm k V} (h : Q.Nondegenerate) :
-    LinearMap.SeparatingLeft (QuadraticMap.associated Q) := by
-  simp only [← QuadraticMap.nondegenerate_associated_iff] at h
-  exact h.1
-
-/-- Let `Q` be a quadratic form on `V` such wht `Q.associated` is `SeparatingLeft`, and
+/-- Let `Q` be a quadratic form on `V` such that `Q.associated` is `SeparatingLeft`, and
 suppose that `Q` is equivalent to the diagonal quadratic form `a_1 X_1^2 + ⋯ + a_n X_n ^ 2`.
 The Hasse-Minkowski invariant of `Q` is defined as the product `∏_{i < j} (a_i, a_j)`, where
 `(·, ·)` denotes the Hilbert symbol.
@@ -82,10 +84,7 @@ section Padic
 
 variable {p : ℕ} [Fact (Nat.Prime p)]
 
--- inferInstance fails (priority issue?)
-noncomputable instance : Module ℚ_[p] ℚ_[p] := Semiring.toModule
-
-instance : Invertible (2 : ℚ_[p]) := sorry
+instance invertibleTwo : Invertible (2 : ℚ_[p]) := sorry
 
 variable {V : Type*} [AddCommGroup V] [Module ℚ_[p] V] [FiniteDimensional ℚ_[p] V]
   {Q : QuadraticForm ℚ_[p] V} (hQ : Q.Nondegenerate)

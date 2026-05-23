@@ -10,7 +10,11 @@ public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.NumberTheory.Padics.PadicNumbers
 
+/-! # Quadratic forms over ℚ -/
+
 @[expose] public section
+
+open QuadraticMap
 
 namespace QuadraticForm
 

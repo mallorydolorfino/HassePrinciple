@@ -9,6 +9,8 @@ module
 public import Mathlib.NumberTheory.Padics.PadicNumbers
 public import Mathlib.Topology.Algebra.OpenSubgroup
 
+/-! # Padic units form an open subgroup. -/
+
 @[expose] public section
 
 namespace Padic
