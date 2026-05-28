@@ -1,13 +1,16 @@
-import HassePrinciple.HilbertSymbol.Basic
-import HassePrinciple.HilbertSymbol.ExistenceTheorem
-import HassePrinciple.NumberTheory.ApproximationTheorem
-import HassePrinciple.Padics.Lemmas
-import HassePrinciple.Padics.Squares
-import HassePrinciple.QuadraticForm.Basic
-import HassePrinciple.QuadraticForm.Chain
-import HassePrinciple.QuadraticForm.HasseMinkowski
-import HassePrinciple.QuadraticForm.HasseMinkowskiInvariant
-import HassePrinciple.QuadraticForm.HighRank
-import HassePrinciple.QuadraticForm.RankFour
-import HassePrinciple.QuadraticForm.RankThree
-import HassePrinciple.QuadraticForm.Rat
+module
+
+public import HassePrinciple.HilbertSymbol.Basic
+public import HassePrinciple.HilbertSymbol.ExistenceTheorem
+public import HassePrinciple.NumberTheory.ApproximationTheorem
+public import HassePrinciple.Padics.Legendre
+public import HassePrinciple.Padics.Lemmas
+public import HassePrinciple.Padics.Squares
+public import HassePrinciple.QuadraticForm.Basic
+public import HassePrinciple.QuadraticForm.Chain
+public import HassePrinciple.QuadraticForm.HasseMinkowski
+public import HassePrinciple.QuadraticForm.HasseMinkowskiInvariant
+public import HassePrinciple.QuadraticForm.HighRank
+public import HassePrinciple.QuadraticForm.RankFour
+public import HassePrinciple.QuadraticForm.RankThree
+public import HassePrinciple.QuadraticForm.Rat
