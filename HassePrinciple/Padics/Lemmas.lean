@@ -84,7 +84,7 @@ theorem multivariable_hensel {p : ℕ} [Fact (Nat.Prime p)] {m : ℕ}
     {f : MvPolynomial (Fin m) ℤ_[p]} {a : Fin m → ℤ_[p]}
     {n k : ℤ} (hk : 0 < 2 * k ∧ 2 * k < n) {j : Fin m}
     (hF : n ≤ valuation (MvPolynomial.aeval a f))
-    (hJ : valuation (MvPolynomial.aeval a (MvPolynomial.pderiv j f)) = k):
+    (hJ : valuation (MvPolynomial.aeval a (MvPolynomial.pderiv j f)) = k) :
       ∃ (z : Fin m → ℤ_[p]), (MvPolynomial.aeval z f = 0) ∧
         ∀ i, n - k ≤ valuation (z i - a i) := by
   sorry
