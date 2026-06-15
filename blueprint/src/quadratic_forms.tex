@@ -158,7 +158,6 @@ The equivalence (b) $\iff$ (c) follows from Corollary \ref{cor:represents_iff_su
 \begin{definition}\label{def:discr}
 \mathlibok 
 \lean{QuadraticForm.discr}
-\uses{def:Hilbert_symbol}
 Let $p$ be a prime number and let $f$ be a quadratic form of rank $n$ over $\Q_p$. Take a diagonal quadratic form $a_1X_1^2 + \cdots + a_nX_n^2$ which is equivalent to $f$; then the \emph{discriminant} of $f$ is the element $d(f) = a_1 \cdots a_n \in \Q_p^\times/{\Q_p^\times}^2$.
 	
 Note that \mathlib contains \code{QuadraticForm.discr}, as an element of $\Q_p$. We might need to adjust some statements and proofs if we really need to regard it as an element in $\Q_p^\times/{\Q_p^\times}^2$.
