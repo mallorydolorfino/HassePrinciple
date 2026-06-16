@@ -73,44 +73,19 @@ lemma mul_square_eq (ha' : a' ≠ 0) (hb' : b' ≠ 0) :
 
 /-- The Hilbert symbol is commutative. -/
 lemma comm : hilbertSym a b = hilbertSym b a := by
-  unfold hilbertSym
-  split_ifs with ha hb hc hd he hf hg hh
-  · rfl
-  · tauto
-  · tauto
-  · tauto
-  · rfl
-  · contrapose hd
-    simp only [ne_eq, Prod.mk.injEq, not_and, not_exists]
-    simp only [ne_eq, Prod.mk.injEq, not_and, not_exists] at hf
-    contrapose hf
-    simp only [not_forall, not_not]
-    simp only [not_forall, not_not] at hf
-    obtain ⟨ x, x_1, x_2, h⟩ := hf
-    use x, x_2, x_1
-    obtain ⟨ hin, hout⟩ := h
-    constructor
-    · rw [sub_sub, add_comm, ← sub_sub] at hout
-      exact hout
-    · have h_new: x = 0 → x_2 = 0 → ¬x_1 = 0 := by
-        intro hz hx hy
-        exact hin hz hy hx
-      exact h_new
-  · tauto
-  · contrapose hd
-    simp only [ne_eq, Prod.mk.injEq, not_and]
-    simp only [ne_eq, Prod.mk.injEq, not_and] at hh
-    obtain ⟨ z, x, y, h⟩ := hh
-    use z, y, x
-    obtain ⟨ hin, hout⟩ := h
-    constructor
-    · have h_new : z = 0 → y = 0 → ¬x = 0 := by
-        intro hz hy hx
-        exact hin hz hx hy
-      exact h_new
-    · rw [sub_sub, add_comm, ← sub_sub] at hout
-      exact hout
-  · rfl
+  simp only [hilbertSym, ne_eq, Prod.mk.injEq, not_and, Int.reduceNeg]
+    by_cases ha : a = 0 
+    · simp [ha]
+    · by_cases hb : b = 0 
+      · simp [hb]
+      · simp only [ha, hb, or_self, ↓reduceIte, Prod.mk.injEq, not_and, Int.reduceNeg] 
+        split_ifs with h h' h'
+        · rfl
+        · obtain ⟨z, x, y, h0, heq⟩ := h
+          exact h' ⟨z, y, x, by aesop, by rw [← heq]; ring⟩ 
+        · obtain ⟨z, x, y, h0, heq⟩ := h'
+          exact h ⟨z, y, x, by aesop, by rw [← heq]; ring⟩  
+        · rfl
 
 /-
 # Basic properties of the Hilbert symbol
