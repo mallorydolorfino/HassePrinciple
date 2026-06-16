@@ -51,69 +51,22 @@ lemma ne_zero_of_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) : hilbertSym a b ≠ 0 :=
 @[simp]
 lemma mul_square_eq (ha' : a' ≠ 0) (hb' : b' ≠ 0) :
     hilbertSym (a * a'^2) (b * b'^2) = hilbertSym a b := by
-  have hforward: ∀ x y z : k, ((x,y,z) ≠ (0, 0, 0) ∧ z^2 = a * a'^2 * x^2 + b * b'^2 * y^2) →
-    z^2 = a*(a'*x)^2 + b*(b'*y)^2 ∧ (a'*x, b'*y, z) ≠ (0, 0, 0) := by
-    intro x y z h
-    obtain ⟨ h1, h2⟩ := h
-    constructor
-    · ring
-      exact h2
-    · simp only [ne_eq, Prod.mk.injEq, mul_eq_zero, not_and]
-      simp at h1
-      intro ha'x hb'y
-      aesop
-  have hbackward: ∀ x y z : k, ((x,y,z)≠(0,0,0) ∧ z^2 = a*x^2+b*y^2) →
-     z^2 = a*a'^2*((1/a')*x)^2 + b*b'^2*((1/b')*y)^2 ∧ ((1/a')*x, (1/b')*y, z) ≠ (0, 0, 0) := by
-    intro x y z h
-    obtain ⟨ h1, h2 ⟩ := h
-    constructor
-    · field_simp
-      exact h2
-    · simp
-      simp at h1
-      aesop
-  unfold hilbertSym
-  simp only [mul_eq_zero, ne_eq,
-    Prod.mk.injEq, not_and] at hforward hbackward
-  split_ifs with ha hb hc hd he hf hg hh
-  · rfl
-  · simp only [zero_ne_one]
-    contrapose! hb
-    simp at ha
-    tauto
-  · contrapose! hb
-    simp at ha
-    tauto
-  · simp only [one_ne_zero]
-    contrapose! hd
-    simp at ha
-    tauto
-  · rfl
-  · contrapose hf
-    obtain ⟨ z, x, y, h⟩ := hd
-    specialize hforward x y z
-    use z, a'*x, b'*y
-    obtain ⟨ h1, h2⟩ := h
-    constructor
-    · simp only [ne_eq, Prod.mk.injEq, mul_eq_zero, not_and, not_or]
-      simp at h1
-      intro hz a'x
-      aesop
-    · ring
-      exact h2
-  · contrapose! hg
-    simp at ha
-    tauto
-  · contrapose hd
-    obtain ⟨ z, x, y, h ⟩:= hh
-    specialize hbackward x y z
-    use z, (1/a'*x), (1/b'*y)
-    obtain ⟨ h1, h2⟩:= h
-    constructor
-    · simp only [one_div, ne_eq, Prod.mk.injEq, mul_eq_zero, inv_eq_zero, not_and, not_or]
-      intro hz ha'x
-      aesop
-    · field_simp
+  simp only [hilbertSym, mul_eq_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
+      pow_eq_zero_iff, Prod.mk.injEq, not_and, Int.reduceNeg]
+    by_cases ha : a = 0 
+    · simp [ha]
+    · by_cases hb : b = 0 
+      · simp [hb]
+      · simp only [mul_eq_zero, ha, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff,
+          false_or, hb, Prod.mk.injEq, not_and, Int.reduceNeg, or_self, ↓reduceIte]
+        rw [if_neg (by aesop)]
+        split_ifs with h h' h'
+        · rfl 
+        · obtain ⟨z, x, y, h0, heq⟩ := h
+          exact h' ⟨z, (a' * x), (b' * y), by aesop, by rw [← heq]; ring⟩ 
+        · obtain ⟨z, x, y, h0, heq⟩ := h'
+          apply h ⟨ z, (1/a'*x), (1/b'*y), by aesop, by field_simp; rw [heq]⟩
+      · rfl
       exact h2
   · rfl
 
