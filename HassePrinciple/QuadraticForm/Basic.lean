@@ -160,7 +160,8 @@ theorem equivalent_weightedSumSquares_units_of_nondegenerate
     let wK : Fin (Module.finrank K V) → K := fun i => w i
     rw [QuadraticMap.mul_unit_isotropic_iff (w := w₀) (w' := w₁) (a := w₀ 0) (by simp [w₁, w₁])]
     have hw₁ :
-        (QuadraticMap.weightedSumSquares K w₁).Equivalent (QuadraticMap.weightedSumSquares K w) := by
+        (QuadraticMap.weightedSumSquares K w₁).Equivalent
+        (QuadraticMap.weightedSumSquares K w) := by
       let u : Fin (Module.finrank K V) → Kˣ := fun i => (w₀ 0)
       exact ⟨QuadraticForm.isometryEquivWeightedSumSquaresWeightedSumSquares
         (w := w₁K) (w' := wK) u (by simp [w₁K, wK, w, u])⟩
