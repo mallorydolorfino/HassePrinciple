@@ -97,58 +97,40 @@ lemma comm : hilbertSym a b = hilbertSym b a := by
   quadratic algebra `QuadraticAlgebra k b 0`. -/
 theorem eq_one_iff (ha : a ≠ 0) (hb : b ≠ 0) (hc : ¬IsSquare b) :
     hilbertSym a b = 1 ↔ ∃ t : QuadraticAlgebra k b 0, a = QuadraticAlgebra.norm t := by
-    constructor
-    · intro hhilb
-      unfold hilbertSym at hhilb
-      split_ifs at hhilb with h1 h2
-      · contrapose hhilb
-        aesop
-      · obtain ⟨ z, x, y, hnonzero, heq⟩ := h2
-        use (QuadraticAlgebra.mk (z/x) (y/x) : (QuadraticAlgebra k b 0))
-        rw [QuadraticAlgebra.norm_def]
-        field_simp
-        rw [sub_eq_zero] at heq
-        ring_nf
-        field_simp
-        rw [mul_comm (y^2) b, ← heq, sub_sub_cancel]
-        field_simp
-        rw [div_self]
-        simp only [ne_eq]
-        contrapose heq
-        rw [heq]
-        ring_nf
-        contrapose hc
-        unfold IsSquare
-        use z/y
-        field_simp
-        rw [hc]
-        field_simp
-        rw [div_self]
-        simp only [ne_eq]
-        contrapose hnonzero
-        simp only [Prod.mk.injEq]
-        constructor
-        · rw [hnonzero] at hc
-          simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, mul_zero,
-            pow_eq_zero_iff] at hc
-          exact hc
-        · exact ⟨ heq, hnonzero⟩
-    · intro hnorm
-      unfold hilbertSym
-      split_ifs with h1 h2
-      · contrapose h1
-        aesop
-      · rfl
-      · contrapose h2
-        obtain ⟨ pq, hnorm'⟩ := hnorm
-        obtain ⟨ p,q⟩ := pq
-        use p, 1, q
-        constructor
-        · aesop
-        · rw [QuadraticAlgebra.norm_def] at hnorm'
-          simp only [zero_mul, add_zero] at hnorm'
-          rw [hnorm']
-          ring
+  rw [hilbertSym, if_neg (by simp [ha, hb])]
+  refine ⟨fun hhilb ↦ ?_, fun hnorm ↦ ?_⟩
+  · simp only [ne_eq, Prod.mk.injEq, not_and, Int.reduceNeg, ite_eq_left_iff, not_exists,
+      reduceCtorEq, imp_false, not_forall, not_not] at hhilb
+    obtain ⟨z, x, y, hnonzero, heq⟩ := hhilb
+    use (QuadraticAlgebra.mk (z/x) (y/x))
+    -- I think this computation would become more readable with a calc block.
+    simp only [QuadraticAlgebra.norm_def, zero_mul, add_zero]
+    field_simp
+    rw [sub_eq_zero] at heq
+    ring_nf
+    field_simp
+    rw [← heq, sub_sub_cancel]
+    field_simp
+    rw [div_self]
+    simp only [ne_eq]
+    contrapose heq
+    rw [heq]
+    ring_nf
+    contrapose hc
+    unfold IsSquare
+    use z/y
+    field_simp
+    rw [hc]
+    field_simp
+    rw [div_self]
+    simp only [ne_eq]
+    aesop
+  · rw [if_pos]
+    obtain ⟨⟨p, q⟩, hnorm'⟩ := hnorm
+    use p, 1, q, by aesop
+    simp only [QuadraticAlgebra.norm_def, zero_mul, add_zero] at hnorm'
+    rw [hnorm']
+    ring
 
 /-- The Hilbert symbol of a and b (both nonzero) equals 1 if b is a square. -/
 @[simp]
