@@ -89,11 +89,10 @@ lemma comm : hilbertSym a b = hilbertSym b a := by
 # Basic properties of the Hilbert symbol
 -/
 
-/- split into when it is and is not a square-/
+/- split into when b is and is not a square-/
 
 /- The Hilbert symbol of a and b (both nonzero) equals 1 if and only if a is a norm from the
   quadratic algebra `QuadraticAlgebra k b 0`. -/
-
 theorem eq_one_iff (ha : a ≠ 0) (hb : b ≠ 0) (hc : ¬IsSquare b) :
     hilbertSym a b = 1 ↔ ∃ t : QuadraticAlgebra k b 0, a = QuadraticAlgebra.norm t := by
   rw [hilbertSym, if_neg (by simp [ha, hb])]
@@ -157,14 +156,22 @@ theorem right_one_minus_self_eq_one (ha0 : a ≠ 0) (ha1 : a ≠ 1) :
   use 1, 1, 1
   aesop
 
--- add lemma. hypothesis a and b not zero
+-- adding 2 lemmas to help with right_mul_eq_of_eq_one.
 theorem eq_one_or_neg_one (ha : a ≠ 0) (hb : b ≠ 0) :
     hilbertSym a b = 1 ∨ hilbertSym a b = -1 := by
-  sorry
+  unfold hilbertSym
+  split_ifs with h1 h2
+  repeat aesop
 
 theorem eq_neg_one_iff_not_one (ha : a ≠ 0) (hb : b ≠ 0) :
     hilbertSym a b = -1 ↔ ¬hilbertSym a b = 1 := by
-  sorry
+  constructor
+  · intro h
+    rw [h]
+    simp only [Int.reduceNeg, reduceCtorEq, not_false_eq_true]
+  · intro h
+    have: hilbertSym a b = 1 ∨ hilbertSym a b = -1 := eq_one_or_neg_one ha hb
+    aesop
 
 /-- If the Hilbert symbol of a and b equals 1, then the Hilbert symbol of a and b * b' equals the
 Hilbert symbol of a and b'. -/
@@ -172,12 +179,11 @@ Hilbert symbol of a and b'. -/
 theorem right_mul_eq_of_eq_one (hab : hilbertSym a b = 1) :
     hilbertSym a (b * b') = hilbertSym a b' := by
   by_cases hb' : (b' = 0)
-  · simp [hilbertSym]
-    aesop
+  · aesop
   · have habnzero : a ≠ 0 ∧ b ≠ 0 := by
       unfold hilbertSym at hab
       aesop
-    rw [comm]
+    rw [comm a (b*b')]
     nth_rw 2 [comm]
     rw [comm] at hab
     obtain ⟨ hanzero, hbnzero ⟩ := habnzero
@@ -189,8 +195,7 @@ theorem right_mul_eq_of_eq_one (hab : hilbertSym a b = 1) :
     · rw [eq_one_iff hbnzero hanzero ha] at hab
       obtain ⟨ t, ht⟩ := hab
       by_cases hbb'zero : b*b' = 0
-      · rw [hbb'zero]
-        aesop
+      · aesop
       · by_cases hb'a : hilbertSym b' a = 1
         · have hexist : ∃ t : QuadraticAlgebra k a 0, b' = QuadraticAlgebra.norm t := by
             rw [← eq_one_iff]
@@ -200,10 +205,8 @@ theorem right_mul_eq_of_eq_one (hab : hilbertSym a b = 1) :
             · exact ha
           obtain ⟨ t', ht'⟩ := hexist
           have hnorm : (b*b') = QuadraticAlgebra.norm (t*t') := by
-            simp only [map_mul]
-            rw [ht, ht']
-          rw [hb'a]
-          rw [eq_one_iff]
+            simp only [map_mul, ht, ht']
+          rw [hb'a, eq_one_iff]
           · use (t*t')
           · simp [hbb'zero]
           · exact hanzero
@@ -220,25 +223,46 @@ theorem right_mul_eq_of_eq_one (hab : hilbertSym a b = 1) :
             · aesop
             · exact hanzero
           rw [hb'aone, eq_neg_one_iff_not_one]
-
-
-
+          · have: hilbertSym a b = 1 ∨ hilbertSym a b = -1 := by
+              apply eq_one_or_neg_one hanzero hbnzero
+            rw [eq_one_iff]
+            · contrapose hnexist
+              obtain ⟨ tt', tt'norm⟩ := hnexist
+              use tt'*(1/t)
+              simp only [map_mul, ← tt'norm]
+              field_simp
+              have Hab : Fact (∀(r : k), r^2 ≠ a + 0 * r) := by
+                rw [fact_iff]
+                intro r
+                aesop
+              rw [ht, ← map_mul]
+              have htnzero: t≠ 0 := by
+                contrapose ht
+                rw [ht]
+                aesop
+              have tinv: t*(1/t)=1 := by
+                rw [mul_one_div_cancel htnzero]
+              rw [tinv]
+              exact Eq.symm QuadraticAlgebra.norm_one
+            · aesop
+            · exact hanzero
+            · exact ha
+          · aesop
+          · exact hanzero
 
 /-- The Hilbert symbol of a and -a*b, equals the Hilbert symbol of a and b. -/
 @[simp]
 theorem right_neg_mul : hilbertSym a (- (a * b)) = hilbertSym a b := by
   by_cases hzero : a = 0
-  · simp [hzero]
+  · simp only [hzero, zero_mul, neg_zero]
     unfold hilbertSym
     aesop
   · have hnega : hilbertSym a (-a) = 1 := by
       apply right_neg_self_eq_one
       simp only [ne_eq]
       exact hzero
-    sorry
-  calc
-    hilbertSym a (- (a * b)) = hilbertSym a (-a*b) := by ring_nf
-    _ = hilbertSym a b := by sorry --rw [right_mul_eq_of_eq_one hnega]
+    rw [← neg_mul]
+    exact right_mul_eq_of_eq_one b hnega
 
 /-- If a is different from 1, then the Hilbert symbol of a and (1-a)*b equals the Hilbert symbol of
 a and b. -/
