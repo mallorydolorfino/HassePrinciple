@@ -88,20 +88,19 @@ end Represents
 section WeightedSumSquares
 
 variable {S R ι : Type*} [Monoid S] [CommSemiring R] [Fintype ι]
-  [DistribMulAction S R] [SMulCommClass S R R] (w w' : ι → Sˣ)
+  [DistribMulAction S R] [SMulCommClass S R R] {w w' : ι → Sˣ}
 
-lemma mul_unit_isotropic (a : Sˣ) (h : ∀ (i : ι), w' i = a * w i) :
-  (weightedSumSquares R w').Isotropic → (weightedSumSquares R w).Isotropic := by
+lemma mul_unit_isotropic {a : Sˣ} (h : ∀ (i : ι), w' i = a * w i) :
+    (weightedSumSquares R w').Isotropic → (weightedSumSquares R w).Isotropic := by
   contrapose!
-  rintro hw x hw'xzero
-  simp only [weightedSumSquares_apply, h, mul_smul, ← Finset.smul_sum, smul_eq_zero_iff_eq] at hw'xzero
+  intro hw x h0
+  simp only [weightedSumSquares_apply, h, mul_smul, ← Finset.smul_sum, smul_eq_zero_iff_eq] at h0
   simp only [Anisotropic, weightedSumSquares_apply] at hw
-  exact hw x hw'xzero
+  exact hw x h0
 
-lemma mul_unit_isotropic_iff (a : Sˣ) (h : ∀ (i : ι), w' i = a * w i) :
-  (weightedSumSquares R w).Isotropic ↔ (weightedSumSquares R w').Isotropic :=
-    ⟨mul_unit_isotropic (w := w') (w' := w) a⁻¹ (by simp[h]: ∀ (i : ι), w i = a⁻¹ * w' i),
-    mul_unit_isotropic (w := w) (w' := w') a h⟩
+lemma mul_unit_isotropic_iff {a : Sˣ} (h : ∀ (i : ι), w' i = a * w i) :
+    (weightedSumSquares R w).Isotropic ↔ (weightedSumSquares R w').Isotropic :=
+  ⟨mul_unit_isotropic (by simp[h]: ∀ (i : ι), w i = a⁻¹ * w' i), mul_unit_isotropic h⟩
 
 end WeightedSumSquares
 
@@ -143,7 +142,7 @@ theorem equivalent_weightedSumSquares_squarefree_units_of_nondegenerate
   sorry
 -- The above three theorems are to be deleted
 
-theorem equivalent_weightedSumSquares_units_of_nondegenerate
+theorem isotropic_iff_weightedSumSquares_units_of_nondegenerate
     {Q : QuadraticForm K V} (hQ : Q.Nondegenerate) :
     ∃ (w : Fin (Module.finrank K V) → Kˣ), w (0 : Fin (Module.finrank K V)) = 1 ∧
       (Q.Isotropic ↔ (QuadraticMap.weightedSumSquares K w).Isotropic) := by
