@@ -157,33 +157,71 @@ theorem right_one_minus_self_eq_one (ha0 : a ≠ 0) (ha1 : a ≠ 1) :
   use 1, 1, 1
   aesop
 
+-- add lemma. hypothesis a and b not zero
+theorem eq_one_or_neg_one (ha : a ≠ 0) (hb : b ≠ 0) :
+    hilbertSym a b = 1 ∨ hilbertSym a b = -1 := by
+  sorry
+
+theorem eq_neg_one_iff_not_one (ha : a ≠ 0) (hb : b ≠ 0) :
+    hilbertSym a b = -1 ↔ ¬hilbertSym a b = 1 := by
+  sorry
+
 /-- If the Hilbert symbol of a and b equals 1, then the Hilbert symbol of a and b * b' equals the
 Hilbert symbol of a and b'. -/
 @[simp]
 theorem right_mul_eq_of_eq_one (hab : hilbertSym a b = 1) :
     hilbertSym a (b * b') = hilbertSym a b' := by
-  have habnzero : a ≠ 0 ∧ b ≠ 0 := by
-    unfold hilbertSym at hab
+  by_cases hb' : (b' = 0)
+  · simp [hilbertSym]
     aesop
-  rw [comm]
-  nth_rw 2 [comm]
-  rw [comm] at hab
-  obtain ⟨ hanzero, hbnzero ⟩ := habnzero
-  by_cases ha: IsSquare a
-  · obtain ⟨ sqrta, sqrtadef⟩ := ha
-    rw [sqrtadef,← pow_two] at hab
-    sorry
-  · rw [eq_one_iff hbnzero hanzero ha] at hab
-    obtain ⟨ t, ht⟩ := hab
-    by_cases hbb'zero : b*b' = 0
-    · rw [hbb'zero]
+  · have habnzero : a ≠ 0 ∧ b ≠ 0 := by
+      unfold hilbertSym at hab
       aesop
-    · by_cases hb'a : hilbertSym b' a = 1
-      · rw [eq_one_iff] at hb'a
-        obtain ⟨ t', ht'⟩ := hb'a
-        have hnorm : (b*b') = QuadraticAlgebra.norm (t*t') := by
-          simp only [map_mul]
-          rw [ht, ht']
+    rw [comm]
+    nth_rw 2 [comm]
+    rw [comm] at hab
+    obtain ⟨ hanzero, hbnzero ⟩ := habnzero
+    by_cases ha: IsSquare a
+    · obtain ⟨ sqrta, sqrtadef⟩ := ha
+      rw [sqrtadef, ← pow_two, right_square_eq_one, right_square_eq_one]
+      repeat
+      · aesop
+    · rw [eq_one_iff hbnzero hanzero ha] at hab
+      obtain ⟨ t, ht⟩ := hab
+      by_cases hbb'zero : b*b' = 0
+      · rw [hbb'zero]
+        aesop
+      · by_cases hb'a : hilbertSym b' a = 1
+        · have hexist : ∃ t : QuadraticAlgebra k a 0, b' = QuadraticAlgebra.norm t := by
+            rw [← eq_one_iff]
+            · exact hb'a
+            · exact hb'
+            · exact hanzero
+            · exact ha
+          obtain ⟨ t', ht'⟩ := hexist
+          have hnorm : (b*b') = QuadraticAlgebra.norm (t*t') := by
+            simp only [map_mul]
+            rw [ht, ht']
+          rw [hb'a]
+          rw [eq_one_iff]
+          · use (t*t')
+          · simp [hbb'zero]
+          · exact hanzero
+          · exact ha
+        · have hnexist : ¬∃ t : QuadraticAlgebra k a 0, b' = QuadraticAlgebra.norm t := by
+            rw [← eq_one_iff]
+            · exact hb'a
+            · exact hb'
+            · exact hanzero
+            · exact ha
+          have hb'aone : hilbertSym b' a = - 1 := by
+            rw [eq_neg_one_iff_not_one]
+            · exact hb'a
+            · aesop
+            · exact hanzero
+          rw [hb'aone, eq_neg_one_iff_not_one]
+
+
 
 
 /-- The Hilbert symbol of a and -a*b, equals the Hilbert symbol of a and b. -/
