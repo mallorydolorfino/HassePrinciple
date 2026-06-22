@@ -159,9 +159,8 @@ theorem right_one_minus_self_eq_one (ha0 : a ≠ 0) (ha1 : a ≠ 1) :
 -- adding 2 lemmas to help with right_mul_eq_of_eq_one.
 theorem eq_one_or_neg_one (ha : a ≠ 0) (hb : b ≠ 0) :
     hilbertSym a b = 1 ∨ hilbertSym a b = -1 := by
-  unfold hilbertSym
-  split_ifs with h1 h2
-  repeat aesop
+  rw [hilbertSym]
+  split_ifs <;> aesop
 
 theorem eq_neg_one_iff_not_one (ha : a ≠ 0) (hb : b ≠ 0) :
     hilbertSym a b = -1 ↔ ¬hilbertSym a b = 1 := by
