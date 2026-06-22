@@ -89,9 +89,7 @@ lemma comm : hilbertSym a b = hilbertSym b a := by
 # Basic properties of the Hilbert symbol
 -/
 
-/- split into when b is and is not a square-/
-
-/- The Hilbert symbol of a and b (both nonzero) equals 1 if and only if a is a norm from the
+/-- The Hilbert symbol of a and b (both nonzero) equals 1 if and only if a is a norm from the
   quadratic algebra `QuadraticAlgebra k b 0`. -/
 theorem eq_one_iff (ha : a ≠ 0) (hb : b ≠ 0) (hc : ¬IsSquare b) :
     hilbertSym a b = 1 ↔ ∃ t : QuadraticAlgebra k b 0, a = QuadraticAlgebra.norm t := by
@@ -156,22 +154,18 @@ theorem right_one_minus_self_eq_one (ha0 : a ≠ 0) (ha1 : a ≠ 1) :
   use 1, 1, 1
   aesop
 
--- adding 2 lemmas to help with right_mul_eq_of_eq_one.
+/-- If both a and b are nonzero, the Hilbert symbol of a and b must be either 1 or -1. -/
 theorem eq_one_or_neg_one (ha : a ≠ 0) (hb : b ≠ 0) :
     hilbertSym a b = 1 ∨ hilbertSym a b = -1 := by
-  unfold hilbertSym
-  split_ifs with h1 h2
-  repeat aesop
+  rw [hilbertSym]
+  split_ifs <;> aesop
 
+/-- If both a and b are nonzero, the Hilbert symbol of a and b is -1 if and only if it is not 1.-/
 theorem eq_neg_one_iff_not_one (ha : a ≠ 0) (hb : b ≠ 0) :
     hilbertSym a b = -1 ↔ ¬hilbertSym a b = 1 := by
-  constructor
-  · intro h
-    rw [h]
-    simp only [Int.reduceNeg, reduceCtorEq, not_false_eq_true]
-  · intro h
-    have: hilbertSym a b = 1 ∨ hilbertSym a b = -1 := eq_one_or_neg_one ha hb
-    aesop
+  refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
+  have := eq_one_or_neg_one ha hb
+  aesop
 
 /-- If the Hilbert symbol of a and b equals 1, then the Hilbert symbol of a and b * b' equals the
 Hilbert symbol of a and b'. -/
@@ -183,7 +177,7 @@ theorem right_mul_eq_of_eq_one (hab : hilbertSym a b = 1) :
   · have habnzero : a ≠ 0 ∧ b ≠ 0 := by
       unfold hilbertSym at hab
       aesop
-    rw [comm a (b*b')]
+    rw [comm]
     nth_rw 2 [comm]
     rw [comm] at hab
     obtain ⟨ hanzero, hbnzero ⟩ := habnzero
@@ -269,13 +263,7 @@ a and b. -/
 @[simp]
 theorem right_minus_self_mul (ha : a ≠ 1) :
     hilbertSym a ((1 - a) * b) = hilbertSym a b := by
-  by_cases hzero : a = 0
-  · aesop
-  · have hone : hilbertSym a (1-a) = 1 := by
-      apply right_one_minus_self_eq_one hzero
-      exact ha
-    apply right_mul_eq_of_eq_one
-    exact hone
+  by_cases hzero : a = 0 <;> aesop
 
 end Field
 
