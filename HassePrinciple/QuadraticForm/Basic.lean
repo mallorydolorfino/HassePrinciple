@@ -76,10 +76,29 @@ lemma anisotropic_of_rank_zero [IsDomain R] [StrongRankCondition R] [Module.Fini
   exact fun x _ ↦ Subsingleton.eq_zero x
 
 -- The rank one case of Hasse-Minkowski will follow from:
-lemma anisotropic_of_rank_one [IsDomain R] [StrongRankCondition R] [Module.IsTorsionFree R M]
+lemma anisotropic_of_rank_one [IsDomain R] [StrongRankCondition R]
+    [Module.Free R M] --Strengthen assumption from [Module.IsTorsionFree R M]. Assuming only TorsionFree is enough. I have trouble working out the formalization for now.
+    [Module.IsTorsionFree R N] -- Added assumption that N is torsion free. Counterexample otherwise: R ℤ. Q : ℤ → ℤ/2ℤ given by Q(x) = x² is nonzero but Q(2)= 0 so Q is not anisotropic.
     (hr : Module.finrank R M = 1) {Q : QuadraticMap R M N} (hQ : Q ≠ 0) :
     Q.Anisotropic := by
-  sorry
+  rw [Module.finrank, Cardinal.toNat_eq_one, rank_eq_one_iff] at hr
+  rcases hr with ⟨b, ⟨hb, hgen⟩⟩
+  intro x hQx
+  obtain ⟨r, hr⟩ := hgen x
+  simp only [← hr, (Q.map_smul r b), smul_eq_zero, mul_eq_zero, or_self] at hQx
+  rcases hQx with (r0 | Qb0)
+  · simpa [r0] using hr.symm
+  · have : Q = 0 := by
+      ext y
+      obtain ⟨s, hs⟩ := hgen y
+      simp [← hs, (Q.map_smul s b), Qb0]
+    contradiction
+
+-- Stronger theorem than `anisotropic_of_rank_one` that does not require `M` to be free, only torsion free. Proof idea: Pick b so that Q(b) ≠ 0. Let x be such that Q(x) = 0. Then by the rank one assumption, r • x + s • b = 0 for some r and s not both zero. Then s² Q(b) = Q (s • b) = Q (- r • x) = Q (r • x) = r² Q(x) = 0. Because Q(b) ≠ 0 and N is torsion free, we have s² = 0, so s = 0. Then r • x = 0 and r ≠ 0. Hence x = 0.
+lemma anisotropic_of_rank_one' [IsDomain R] [StrongRankCondition R]
+    [Module.IsTorsionFree R M] [Module.IsTorsionFree R N]
+    (hr : Module.finrank R M = 1) {Q : QuadraticMap R M N} (hQ : Q ≠ 0) :
+    Q.Anisotropic := by sorry
 
 end CommRing
 
