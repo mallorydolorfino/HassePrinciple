@@ -120,6 +120,21 @@ lemma Equivalent.baseChange (A : Type*) [CommRing A] [Algebra R A] [Invertible (
         simp [polar, -map_add, ← map_add f]
       simpa [polar, ← hx, ← hy] using this
 
+#check IsometryEquiv.toLinearEquiv
+
+open Module in
+lemma Equivalent.discr {ι : Type*} [Fintype ι] [DecidableEq ι] (b₁ : Basis ι R M)
+    (b₂ : Basis ι R N) {Q₁ : QuadraticForm R M} {Q₂ : QuadraticForm R N} (h : Q₁.Equivalent Q₂) :
+    Q₁.discr b₁ = Q₂.discr b₂ := by
+  classical
+  obtain ⟨f⟩ := h
+  have h1 : ((LinearMap.toMatrix b₁ b₂) ↑f.toLinearEquiv).det = 1 := by
+    sorry
+  have hcomp : Q₁ = Q₂.comp f := by ext; simp
+  simp [QuadraticForm.discr, hcomp, toMatrix_comp b₁ b₂ _ (f.toLinearEquiv : M →ₗ[R] N)]
+
+  sorry
+
 -- TODO: change in Mathlib
 theorem polarBilin_injective' :
     Function.Injective (polarBilin : QuadraticMap R M N → _) :=

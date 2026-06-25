@@ -90,7 +90,7 @@ lemma eq_of_equivalent (h : Q.Equivalent Q') :
   sorry
 
 lemma eq_one_or_neg_one :
-    HasseMinkoskiInvariant hQ = 1 ∨ HasseMinkoskiInvariant hQ = 1 := sorry
+    HasseMinkoskiInvariant hQ = 1 ∨ HasseMinkoskiInvariant hQ = - 1 := sorry
 
 open Module TensorProduct in
 lemma of_baseChange_weightedSumSquares {R : Type*} (A : Type*) [Field R]
@@ -111,18 +111,95 @@ lemma of_baseChange_weightedSumSquares {R : Type*} (A : Type*) [Field R]
 end HasseMinkoskiInvariant
 section Field
 
-open Module
+open Module _root_.QuadraticMap
 
 -- TODO: check that this level of generality works; otherwise split into Padic and Real cases.
 
 variable {K V : Type*} [Field K] [CharZero K] [AddCommGroup V] [Module K V]
   [FiniteDimensional K V] {Q : QuadraticForm K V} (hQ : Q.Nondegenerate)
 
+example {a b : ℤ} (ha : a = 1 ∨ a = -1) (hb : b = 1 ∨ b = -1) :
+  a = b ↔ a * b = 1 := by aesop
+
 lemma represents_zero_iff_of_rank_three (b : Basis (Fin 3) K V) :
-    Q.represents 0 ↔
+    Q.Isotropic ↔
       hilbertSym (-1) (-Q.discr b) =
         HasseMinkoskiInvariant (Q.nondegenerate_associated_iff.mpr hQ).1 := by
-  sorry
+  have hr : finrank K V = 3 := by sorry
+  obtain ⟨w, hw⟩ := Q.equivalent_weightedSumSquares_units_of_nondegenerate'
+    (QuadraticMap.nondegenerate_associated_iff.mpr hQ).1
+  let a₀ := w ⟨0, by omega⟩
+  let a₁ := w ⟨1, by omega⟩
+  let a₂ := w ⟨2, by omega⟩
+  set s := hilbertSym (-1) (-Q.discr b)
+  set ε := HasseMinkoskiInvariant (Q.nondegenerate_associated_iff.mpr hQ).1 with hε_def
+  have hs1 : s = 1 ∨ s = -1 := hilbertSym.eq_one_or_neg_one_of_ne_zero (by simp)
+    (neg_ne_zero.mpr ((nondegenerate_iff_discr_ne_zero b).mp hQ))
+  have hε1 : ε = 1 ∨ ε = -1 :=
+    HasseMinkoskiInvariant.eq_one_or_neg_one (Q.nondegenerate_associated_iff.mpr hQ).1
+  have hi : Q.Isotropic ↔ hilbertSym (a₂ * a₀ : K) (a₂ * a₁) = 1 := by
+    have : Q.Isotropic ↔
+      (weightedSumSquares K ![- a₂ * a₀, - a₂ * a₁, 1]).Isotropic := sorry
+    rw [this]
+    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, ← represents_zero_iff_isotropic, represents,
+      weightedSumSquares_apply, Units.smul_def, smul_eq_mul, Fin.sum_univ_three, Fin.isValue,
+      Matrix.cons_val_zero, Units.val_mul, Matrix.cons_val_one, Matrix.cons_val, Units.val_one,
+      one_mul, ne_eq, hilbertSym, mul_eq_zero, Units.ne_zero, or_self, ↓reduceIte, Prod.mk.injEq,
+      not_and, Int.reduceNeg, ite_eq_left_iff, not_exists, reduceCtorEq, imp_false,
+      not_forall, not_not]
+    refine ⟨fun ⟨x, hx, hx0⟩ ↦ ⟨x 2, x 0, x 1, ?_, ?_⟩,
+      fun ⟨x, y, z, h0, h⟩ ↦ ⟨![y, z, x], ?_, by aesop⟩⟩
+    · intros h0 h1 h2
+      simp only [funext_iff, Fin.forall_iff, Pi.zero_apply, not_forall] at hx0
+      grind
+    · simp only [← hx, Units.val_neg]
+      ring
+    · simp only [← h, Units.val_neg, Matrix.cons_val]
+      ring
+  have hd : discr b Q = a₀ * a₁ * a₂ := by
+    calc discr b Q
+      _ = discr (Pi.basisFun K (Fin (finrank K V))) (weightedSumSquares K w) := by
+
+        sorry
+      _ =  a₀ * a₁ * a₂ := by
+        simp only [weightedSumSquares_discr, Units.smul_def, smul_eq_mul, mul_one]
+        rw [Finset.prod_equiv (finCongr hr) (s := Finset.univ) (t := Finset.univ)
+          (g := ![(a₀ : K), a₁, a₂]) (by aesop) ]
+        · simp [Fin.prod_univ_three]
+        · intro i _;
+          simp only [Nat.succ_eq_add_one, Nat.reduceAdd, finCongr_apply, a₀, a₁, a₂]
+
+          sorry
+  have hε : ε = hilbertSym (a₀ : K) a₁ * hilbertSym (a₀ : K) a₂ * hilbertSym (a₁ : K) a₂ := sorry
+  have heq : hilbertSym (a₂ * a₀ : K) (a₂ * a₁) = s * ε := by
+    calc hilbertSym (a₂ * a₀ : K) (a₂ * a₁)
+      _ = hilbertSym (a₂ * a₀ : K) (a₂ * a₁) := by sorry
+      _ = hilbertSym (-1 : K) (- (a₀ * a₁ * a₂)) *
+          (hilbertSym (a₀ : K) a₁ * hilbertSym (a₀ : K) a₂ * hilbertSym (a₁ : K) a₂) := by sorry
+      _ = s * ε := by simp [s, hε, hd]
+  rw [hi, show s = ε ↔ s * ε = 1 by aesop, heq]
+
+
+/- lemma represents_zero_iff_of_rank_three (b : Basis (Fin 3) K V) :
+    Q.Isotropic ↔
+      hilbertSym (-1) (-Q.discr b) =
+        HasseMinkoskiInvariant (Q.nondegenerate_associated_iff.mpr hQ).1 := by
+  have : finrank K V = 3 := sorry
+  obtain ⟨w, hw⟩ := Q.equivalent_weightedSumSquares_units_of_nondegenerate'
+    (QuadraticMap.nondegenerate_associated_iff.mpr hQ).1
+  let a₀ := w ⟨0, by omega⟩
+  let a₁ := w ⟨1, by omega⟩
+  let a₂ := w ⟨2, by omega⟩
+  let w' : Fin (finrank K V) → Kˣ := fun i ↦ -w ⟨2, by omega⟩ * w i
+  have hi : (weightedSumSquares K w').Isotropic ↔
+    (weightedSumSquares K ![w ⟨0, by omega⟩, w ⟨1, by omega⟩, 1]).Isotropic := sorry
+  have hd : discr b Q = a₀ * a₁ * a₂ := by
+    calc discr b Q
+      _ = discr (Pi.basisFun K (Fin (finrank K V))) (weightedSumSquares K w) := sorry
+      _ =  a₀ * a₁ * a₂ := sorry
+  rw [hw.isotropic_iff, mul_unit_isotropic_iff (w' := w') (a := -w ⟨2, by omega⟩) (by simp [w']),
+    hi, hd]
+  simp? [← represents_zero_iff_isotropic, represents, hilbertSym]-/
 
 lemma represents_iff_of_rank_two (b : Basis (Fin 2) K V) (a : K) :
     Q.represents a ↔
