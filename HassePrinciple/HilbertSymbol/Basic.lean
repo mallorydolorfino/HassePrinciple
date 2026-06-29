@@ -41,7 +41,7 @@ namespace hilbertSym
 
 section Field
 
-variable {k : Type*} [Field k] {a b : k} (a' b' : k)
+variable {k : Type*} [Field k] {a b a' b' : k}
 
 lemma eq_one_or_neg_one_of_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) :
     hilbertSym a b = 1 ∨ hilbertSym a b = -1 := by
@@ -54,9 +54,8 @@ lemma ne_zero_of_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) : hilbertSym a b ≠ 0 :=
   split_ifs <;> simp
 
 /-- If `a` and `b` are multiplied by a square, the Hilbert symbol is unchanged. -/
-@[simp]
 lemma mul_square_eq (ha' : a' ≠ 0) (hb' : b' ≠ 0) :
-  hilbertSym (a * a'^2) (b * b'^2) = hilbertSym a b := by
+    hilbertSym (a * a' ^ 2) (b * b' ^ 2) = hilbertSym a b := by
   simp only [hilbertSym, mul_eq_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
       pow_eq_zero_iff, Prod.mk.injEq, not_and, Int.reduceNeg]
   by_cases ha : a = 0
@@ -73,6 +72,20 @@ lemma mul_square_eq (ha' : a' ≠ 0) (hb' : b' ≠ 0) :
       · obtain ⟨z, x, y, h0, heq⟩ := h'
         apply h ⟨ z, (1/a'*x), (1/b'*y), by aesop, by field_simp; rw [heq]⟩
       · rfl
+
+/-- Special case of `mul_square_eq`. -/
+@[simp]
+lemma mul_left_square_eq (ha' : a' ≠ 0) :
+    hilbertSym (a * a' ^ 2) b = hilbertSym a b := by
+  nth_rw 1 [← mul_one b]
+  rw [← one_pow 2, mul_square_eq ha' one_ne_zero]
+
+/-- Special case of `mul_square_eq`. -/
+@[simp]
+lemma mul_right_square_eq (hb' : b' ≠ 0) :
+    hilbertSym a (b * b' ^ 2) = hilbertSym a b := by
+  nth_rw 1 [← mul_one a]
+  rw [← one_pow 2, mul_square_eq one_ne_zero hb']
 
 /-- The Hilbert symbol is commutative. -/
 lemma comm : hilbertSym a b = hilbertSym b a := by
@@ -133,7 +146,6 @@ theorem right_square_eq_one (ha : a ≠ 0) (hb : b ≠ 0) : hilbertSym a (b ^ 2)
   rw [hilbertSym, if_neg (by aesop), if_pos]
   use b, 0, 1
   aesop
-
 
 /-- The Hilbert symbol of a and -a, with a nonzero, equals 1. -/
 @[simp]
