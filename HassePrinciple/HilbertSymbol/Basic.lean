@@ -174,6 +174,10 @@ theorem right_mul_eq_of_eq_one (hab : hilbertSym a b = 1) :
 theorem right_neg_mul : hilbertSym a (- (a * b)) = hilbertSym a b := by
   sorry
 
+@[simp]
+theorem left_neg_mul : hilbertSym (- (a * b)) b = hilbertSym a b := by
+  rw [comm, mul_comm a, right_neg_mul, comm]
+
 /-- If a is different from 1, then the Hilbert symbol of a and (1-a)*b equals the Hilbert symbol of
 a and b. -/
 @[simp]
@@ -187,16 +191,47 @@ end Field
 ## Local properties: computation of the Hilbert symbol in the real and p-adic cases
 -/
 
+section Real
+
+variable {a b a' b' : ℝ}
+
 /-- If k = ℝ, and a and b are nonzero, then the Hilbert symbol equals 1 if and only if either a or
 b is positive. -/
-theorem real_eq {a b : ℝ} (ha : a ≠ 0) (hb : b ≠ 0) :
+theorem real_eq (ha : a ≠ 0) (hb : b ≠ 0) :
     hilbertSym a b = if 0 < a ∨ 0 < b then 1 else -1 := by
   sorry
+
+-- aesop could finish the proof earlier, but it is quite slow
+lemma real_mul_left_eq :
+    hilbertSym (a * a') b = hilbertSym a b * hilbertSym a' b := by
+  by_cases h0 : a = 0 ∨ a' = 0 ∨ b = 0
+  · rcases h0 with h0 | h0 | h0 <;> simp [hilbertSym, h0]
+  · simp  only [not_or] at h0
+    obtain ⟨ha, ha', hb⟩ := h0
+    rw [real_eq ha hb, real_eq ha' hb, real_eq (by positivity) hb]
+    rcases lt_or_gt_of_ne (Ne.symm ha) with ha | ha
+    · simp [ha]
+    · by_cases hb0 : 0 < b
+      · simp [hb0]
+      · simp [not_lt.mpr ha.le, hb0]
+        by_cases ha'0 : 0 < a'
+        · simp [ha'0, ha.le]
+        · simp [ha'0, mul_pos_of_neg_of_neg ha (lt_of_le_of_ne (not_lt.mp ha'0) ha')]
+
+lemma real_mul_right_eq :
+    hilbertSym a (b * b') = hilbertSym a b * hilbertSym a b' := by
+  rw [comm, real_mul_left_eq, comm, comm (b := b')]
+
+end Real
+
+section Padic
+
+variable {p : ℕ} [hp : Fact (Nat.Prime p)] {x y x' y' : (ℚ_[p])}
 
 open Padic PadicInt
 section odd
 
-variable {p : ℕ} [hp : Fact (Nat.Prime p)] (hp2 : p ≠ 2) {x y : (ℚ_[p])} (hx : x ≠ 0) (hy : y ≠ 0)
+variable (hp2 : p ≠ 2) (hx : x ≠ 0) (hy : y ≠ 0)
 
 /-- Main theorem for odd p, case v(x)=0, v(y)=0. -/
 lemma padic_odd_case00 (hx0 : x.valuation = 0) (hy0 : y.valuation = 0) :
@@ -262,8 +297,6 @@ lemma two_adic_case11 (hx1 : valuation (x : ℚ_[2]) = 1) (hy1 : valuation (y : 
       omega (unitPart (Units.mk0 x hx))) := by
   sorry
 
-open PadicInt
-
 /-- If x, y are nonzero in ℚ_[2], then the Hilbert symbol of x and y equals
 `(-1) ^ (ε(u_x)ε(u_y) + v(x)ω(u_y) + v(y)ω(u_x))`, where u_x, u_y are the unit parts of x, y
 respectively. -/
@@ -276,7 +309,39 @@ theorem two_adic_eq :
 
 end two
 
--- do we need the bilinear form property? (see Theorem 2 and Cor.)
+-- TODO: add to blueprint
+lemma padic_mul_left_eq :
+    hilbertSym (x * x') y = hilbertSym x y * hilbertSym x' y := by
+  sorry
+
+lemma padic_mul_right_eq :
+    hilbertSym x (y * y') = hilbertSym x y * hilbertSym x y' := by
+  rw [comm, padic_mul_left_eq, comm, comm (b := y')]
+
+
+end Padic
+
+-- @[implicit_reducible]
+-- noncomputable def field {K : Type} (hK : K = ℝ ∨ ∃ (p : ℕ) (_ : Fact (Nat.Prime p)), K = ℚ_[p]) :
+--     Field K := by
+--   classical
+--   exact if h : K = ℝ then (by rw [h]; infer_instance) else by
+--     have hp : ∃ p, ∃ (hp : Fact (Nat.Prime p)), K = ℚ_[p] := by tauto
+--     let p := hp.choose
+--     let := hp.choose_spec.choose
+--     let hp := hp.choose_spec.choose_spec
+--     rw [hp]; infer_instance
+
+-- -- Not defeq
+-- example : field (K := ℝ) (by simp) = Real.instField := by
+--   simp [field]
+
+-- example {K : Type} (hK : K = ℝ ∨ ∃ (p : ℕ) (hp : Fact (Nat.Prime p)), K = ℚ_[p])
+--     (x x' y : K) :
+--     letI := field hK
+--     hilbertSym (x * x') y = hilbertSym x y * hilbertSym x' y := by
+--   sorry
+
 /-
 # Global properties of the Hilbert symbol
 -/

@@ -32,8 +32,8 @@ namespace QuadraticForm
 
 variable {k : Type*} [Field k] --[CharZero k]
 
--- Let `V` be a `k`-vector space.
-variable {V : Type*} [AddCommGroup V] [Module k V]
+-- Let `V` and `W` be `k`-vector spaces.
+variable {V W : Type*} [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
 
 -- Let `Q` be a quadratic form on `V`.
 variable (Q : QuadraticForm k V)
@@ -51,7 +51,7 @@ lemma HasseMinkoskiInvariantAux.eq_of_equivalent {n m : ℕ} {w : Fin n → kˣ}
     HasseMinkoskiInvariantAux w = HasseMinkoskiInvariantAux w' := by
   sorry
 
-variable [Invertible (2 : k)] [FiniteDimensional k V]
+variable [Invertible (2 : k)] [FiniteDimensional k V] [FiniteDimensional k W]
 
 /-- Let `Q` be a quadratic form on `V` such that `Q.associated` is `SeparatingLeft`, and
 suppose that `Q` is equivalent to the diagonal quadratic form `a_1 X_1^2 + ⋯ + a_n X_n ^ 2`.
@@ -67,7 +67,8 @@ namespace HasseMinkoskiInvariant
 
 open _root_.QuadraticMap
 
-variable {Q Q' : QuadraticForm k V} (hQ : LinearMap.SeparatingLeft Q.associated)
+variable {Q : QuadraticForm k V} {Q' : QuadraticForm k W}
+  (hQ : LinearMap.SeparatingLeft Q.associated)
 
 lemma weightedSumSquares {n : ℕ} (w : Fin n → kˣ) :
     HasseMinkoskiInvariant
@@ -127,9 +128,7 @@ lemma of_baseChange_weightedSumSquares {R : Type*} (A : Type*) [Field R]
   rw [HasseMinkoskiInvariant.eq_of_equivalent_weightedSumSquares
     (w := ![Units.map (algebraMap R A) (w ⟨0, by omega⟩),
        Units.map (algebraMap R A) (w ⟨1, by omega⟩)]) _
-    (((baseChange_weightedSumSquares _ _ _).trans (Equivalent.refl _))),
-    HasseMinkoskiInvariant.weightedSumSquares, Finset.prod_eq_single (⟨0, by omega⟩, ⟨1, by omega⟩)
-      (by grind) (fun h ↦ by simp at h)]
+    (((baseChange_weightedSumSquares _ _ _).trans (Equivalent.refl _))), weightedSumSquares_two]
   simp
 
 end HasseMinkoskiInvariant
@@ -137,11 +136,10 @@ section Field
 
 open Module _root_.QuadraticMap
 
--- TODO: check that this level of generality works; otherwise split into Padic and Real cases.
-
 variable {K V : Type*} [Field K] [CharZero K] [AddCommGroup V] [Module K V]
   [FiniteDimensional K V] {Q : QuadraticForm K V} (hQ : Q.Nondegenerate)
 
+-- TODO: move
 /-- This generalizes Mathlib's `weightedSumSquaresCongr`. -/
 def weightedSumSquaresCongr' {ι κ S R : Type*} [Fintype ι] [Fintype κ] [CommSemiring R]
     [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
@@ -157,11 +155,13 @@ def weightedSumSquaresCongr' {ι κ S R : Type*} [Fintype ι] [Fintype κ] [Comm
     simp only [weightedSumSquares_apply, h, Function.comp_apply]
     exact Finset.sum_equiv f.symm (by simp) (by simp)
 
+-- TODO: move
 lemma weightedSumSquaresCongr'_equivalent {ι κ S R : Type*} [Fintype ι] [Fintype κ] [CommSemiring R]
     [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
     {w : ι → S} {w' : κ → S} (f : ι ≃ κ) (h : w = w'.comp f) :
-    (weightedSumSquares R w).Equivalent (weightedSumSquares R w') :=  ⟨weightedSumSquaresCongr' f h⟩
+    (weightedSumSquares R w).Equivalent (weightedSumSquares R w') := ⟨weightedSumSquaresCongr' f h⟩
 
+-- TODO: move
 lemma weightedSumSquares_isotropic_iff_hilbertSym_eq_one' {R : Type*} [Field R] (a b : Rˣ) :
     (weightedSumSquares R ![a, b, 1]).Isotropic ↔ hilbertSym (-a : R) (-b) = 1 := by
   simp only [Nat.succ_eq_add_one, Nat.reduceAdd, ← represents_zero_iff_isotropic, represents,
@@ -197,7 +197,152 @@ lemma _root_.LinearEquiv.det_toMatrix_ne_zero {ι R M N : Type*} [DecidableEq ι
   exact Matrix.det_ne_zero_of_left_inverse (B := LinearMap.toMatrix b' b f.symm)
     (by simp [← LinearMap.toMatrix_comp])
 
+theorem equivalent_weightedSumSquares_three_units_of_nondegenerate {K V : Type*}
+    [Field K] [Invertible (2 : K)] [AddCommGroup V] [Module K V] (hr : finrank K V = 3)
+    {Q : QuadraticForm K V} (hQ : LinearMap.SeparatingLeft (QuadraticMap.associated Q)) :
+    ∃ (w : Fin 3 → Kˣ), QuadraticMap.Equivalent Q (QuadraticMap.weightedSumSquares K w) := by
+  have : FiniteDimensional K V := finite_of_finrank_eq_succ hr
+  obtain ⟨w, hw⟩ := Q.equivalent_weightedSumSquares_units_of_nondegenerate' hQ
+  refine ⟨![w ⟨0, by omega⟩, w ⟨1, by omega⟩, w ⟨2, by omega⟩], ?_⟩
+  apply hw.trans
+  apply (weightedSumSquaresCongr'_equivalent (finCongr hr) ?_)
+  ext n
+  cases n with
+  | mk n hn =>
+    have hn : n = 0 ∨ n = 1 ∨ n = 2  := by omega
+    aesop
+
+omit [FiniteDimensional K V] in --TODO: reorganize
+private lemma discr_three (b : Basis (Fin 3) K V) {w : Fin 3 → Kˣ}
+    (fw : Q.IsometryEquiv (weightedSumSquares K w)) :
+    discr b Q = w 0 * w 1 * w 2 *
+      ((LinearMap.toMatrix b (Pi.basisFun K (Fin 3))) fw.toLinearEquiv).det ^ 2 := by
+  rw [IsometryEquiv.discr (Equiv.refl _) b (Pi.basisFun K (Fin 3)) fw]
+  simp [weightedSumSquares_discr, Units.smul_def, smul_eq_mul, mul_one, Fin.prod_univ_three]
+
+private lemma represents_zero_iff_of_rank_three_aux (b : Basis (Fin 3) K V) (hQ : Q.Nondegenerate)
+    {w : Fin 3 → Kˣ} (hw : Q.Equivalent (weightedSumSquares K w))
+    (heq : hilbertSym (-w 2 * w 0 : K) (-w 2 * w 1) = hilbertSym (-1) (-Q.discr b) *
+        HasseMinkoskiInvariant (Q.nondegenerate_associated_iff.mpr hQ).1) :
+    Q.Isotropic ↔ hilbertSym (-1) (-Q.discr b) =
+        HasseMinkoskiInvariant (Q.nondegenerate_associated_iff.mpr hQ).1 := by
+  have hw' : w = ![w 0, w 1, w 2] := List.ofFn_inj.mp rfl
+  set s := hilbertSym (-1) (-Q.discr b)
+  set ε := HasseMinkoskiInvariant (Q.nondegenerate_associated_iff.mpr hQ).1 with hε_def
+  have hs1 : s = 1 ∨ s = -1 := hilbertSym.eq_one_or_neg_one_of_ne_zero (by simp)
+    (neg_ne_zero.mpr ((nondegenerate_iff_discr_ne_zero b).mp hQ))
+  have hε1 : ε = 1 ∨ ε = -1 :=
+    HasseMinkoskiInvariant.eq_one_or_neg_one (Q.nondegenerate_associated_iff.mpr hQ).1
+  have hsε : s = ε ↔ s * ε = 1 := by
+    rcases hs1 with hs1 | hs1 <;> rcases hε1 with hε1 | hε1 <;> simp [hs1, hε1]
+  -- let ⟨fw⟩ := hw
+  -- let u := ((LinearMap.toMatrix b (Pi.basisFun K (Fin 3))) ↑fw.toLinearEquiv).det
+  -- have hu : discr b Q = w 0 * w 1 * w 2 * u ^ 2 := by
+  --   rw [IsometryEquiv.discr (Equiv.refl _) b (Pi.basisFun K (Fin 3)) fw]
+  --   simp only [weightedSumSquares_discr, Units.smul_def, smul_eq_mul, mul_one]
+  --   simp [Fin.prod_univ_three, u]
+  have hε : ε = hilbertSym (w 0 : K) (w 1) * hilbertSym (w 0 : K) (w 2) *
+      hilbertSym (w 1 : K) (w 2) := by
+    simp [ε, HasseMinkoskiInvariant.eq_of_equivalent _ hw,
+      HasseMinkoskiInvariant.weightedSumSquares_three]
+  rw [hw.isotropic_iff, hw', weightedSumSquares_isotropic_iff_hilbertSym_eq_one, hsε, heq]
+
+namespace Real
+
+variable {V : Type*} [AddCommGroup V] [Module ℝ V] [FiniteDimensional ℝ V] {Q : QuadraticForm ℝ V}
+  (hQ : Q.Nondegenerate)
+
+lemma represents_zero_iff_of_rank_three (b : Basis (Fin 3) ℝ V) :
+    Q.Isotropic ↔
+      hilbertSym (-1) (-Q.discr b) =
+        HasseMinkoskiInvariant (Q.nondegenerate_associated_iff.mpr hQ).1 := by
+  obtain ⟨w, hw⟩ := equivalent_weightedSumSquares_three_units_of_nondegenerate
+    ( by simp [finrank_eq_card_basis b]) (Q.nondegenerate_associated_iff.mpr hQ).1
+  -- Set up notation for readability
+  let ⟨fw⟩ := hw
+  let a₀ := w 0
+  let a₁ := w 1
+  let a₂ := w 2
+  let u := ((LinearMap.toMatrix b (Pi.basisFun ℝ (Fin 3))) fw.toLinearEquiv).det
+  set s := hilbertSym (-1) (-Q.discr b)
+  set ε := HasseMinkoskiInvariant (Q.nondegenerate_associated_iff.mpr hQ).1 with hε_def
+  have hε : ε = hilbertSym (a₀ : ℝ) a₁ * hilbertSym (a₀ : ℝ) a₂ * hilbertSym (a₁ : ℝ) a₂ := by
+    simp [ε, HasseMinkoskiInvariant.eq_of_equivalent _ hw,
+      HasseMinkoskiInvariant.weightedSumSquares_three, a₀, a₁, a₂]
+  rw [represents_zero_iff_of_rank_three_aux b hQ hw]
+  -- Computation using properties of the Hilbert Symbol
+  calc hilbertSym (-a₂ * a₀ : ℝ) (-a₂ * a₁)
+      _ = hilbertSym (-1 : ℝ) (- 1) * hilbertSym (-1 : ℝ) a₀ * hilbertSym (-1 : ℝ) a₁ *
+          hilbertSym (a₂ : ℝ) a₂ *
+          (hilbertSym (a₀ : ℝ) a₁ * hilbertSym (a₀ : ℝ) a₂ * hilbertSym (a₁ : ℝ) a₂) := by
+          rw [← neg_one_mul (a₂ : ℝ)]
+          simp only [hilbertSym.real_mul_right_eq, hilbertSym.real_mul_left_eq]
+          rw [hilbertSym.comm (a := (a₂ : ℝ)) (b := -1), hilbertSym.comm (a := (a₀ : ℝ)) (b := -1),
+            hilbertSym.comm (a := (a₂ : ℝ)) (b := a₁)]
+          ring_nf
+          rw [sq_eq_one_iff.mpr (hilbertSym.eq_one_or_neg_one_of_ne_zero (by simp) (by simp))]
+          simp
+      _ = hilbertSym (-1 : ℝ) (- 1) * hilbertSym (-1 : ℝ) a₀ * hilbertSym (-1 : ℝ) a₁ *
+          hilbertSym (a₂ : ℝ) a₂ * ε := by simp [hε]
+      _ = hilbertSym (-1 : ℝ) (- 1) * hilbertSym (-1 : ℝ) a₀ * hilbertSym (-1 : ℝ) a₁ *
+          hilbertSym (-1 : ℝ) a₂ * ε := by
+          congr 2
+          rw [← hilbertSym.left_neg_mul (a := -1)]
+          simp
+      _ = hilbertSym (-1 : ℝ) (- 1) * hilbertSym (-1 : ℝ) (a₀ * a₁ * a₂) * ε := by
+        rw [hilbertSym.real_mul_right_eq, hilbertSym.real_mul_right_eq]
+        ring
+      _ = hilbertSym (-1 : ℝ) (- (a₀ * a₁ * a₂)) * ε := by
+        rw [← neg_one_mul (_ * _), hilbertSym.real_mul_right_eq (b := -1)]
+      _ = hilbertSym (-1 : ℝ) (- (a₀ * a₁ * a₂ * u ^ 2)) * ε := by
+        rw [← neg_mul _ ((u : ℝ) ^ 2), hilbertSym.mul_right_square_eq]
+        exact LinearEquiv.det_toMatrix_ne_zero _ _ _
+      _ = s * ε := by simp [s, discr_three b fw, u, a₀, a₁, a₂]
+
+end Real
+
+
 lemma represents_zero_iff_of_rank_three (b : Basis (Fin 3) K V) :
+    Q.Isotropic ↔
+      hilbertSym (-1) (-Q.discr b) =
+        HasseMinkoskiInvariant (Q.nondegenerate_associated_iff.mpr hQ).1 := by
+  have hr : finrank K V = 3 := by simp [finrank_eq_card_basis b]
+  obtain ⟨w, hw⟩ := equivalent_weightedSumSquares_three_units_of_nondegenerate hr
+    (QuadraticMap.nondegenerate_associated_iff.mpr hQ).1
+  let a₀ := w 0
+  let a₁ := w 1
+  let a₂ := w 2
+  have hw' : w = ![w 0, w 1, w 2] := List.ofFn_inj.mp rfl
+  set s := hilbertSym (-1) (-Q.discr b)
+  set ε := HasseMinkoskiInvariant (Q.nondegenerate_associated_iff.mpr hQ).1 with hε_def
+  have hs1 : s = 1 ∨ s = -1 := hilbertSym.eq_one_or_neg_one_of_ne_zero (by simp)
+    (neg_ne_zero.mpr ((nondegenerate_iff_discr_ne_zero b).mp hQ))
+  have hε1 : ε = 1 ∨ ε = -1 :=
+    HasseMinkoskiInvariant.eq_one_or_neg_one (Q.nondegenerate_associated_iff.mpr hQ).1
+  have hi : Q.Isotropic ↔ hilbertSym (-a₂ * a₀ : K) (-a₂ * a₁) = 1 := by
+    rw [hw.isotropic_iff, hw', weightedSumSquares_isotropic_iff_hilbertSym_eq_one]
+  let ⟨fw⟩ := hw
+  let u := ((LinearMap.toMatrix b (Pi.basisFun K (Fin 3))) ↑fw.toLinearEquiv).det
+  have hu : discr b Q = a₀ * a₁ * a₂ * u ^ 2 := by
+    rw [IsometryEquiv.discr (Equiv.refl _) b (Pi.basisFun K (Fin 3)) fw]
+    simp only [weightedSumSquares_discr, Units.smul_def, smul_eq_mul, mul_one]
+    simp [Fin.prod_univ_three, u, a₀, a₁, a₂]
+  have hε : ε = hilbertSym (a₀ : K) a₁ * hilbertSym (a₀ : K) a₂ * hilbertSym (a₁ : K) a₂ := by
+    simp [ε, HasseMinkoskiInvariant.eq_of_equivalent _ hw,
+      HasseMinkoskiInvariant.weightedSumSquares_three, a₀, a₁, a₂]
+  have heq : hilbertSym (-a₂ * a₀ : K) (-a₂ * a₁) = s * ε := by
+    calc hilbertSym (-a₂ * a₀ : K) (-a₂ * a₁)
+      _ = hilbertSym (-1 : K) (- (a₀ * a₁ * a₂)) *
+          (hilbertSym (a₀ : K) a₁ * hilbertSym (a₀ : K) a₂ * hilbertSym (a₁ : K) a₂) := by sorry
+      _ = hilbertSym (-1 : K) (- (a₀ * a₁ * a₂ * u ^ 2)) *
+          (hilbertSym (a₀ : K) a₁ * hilbertSym (a₀ : K) a₂ * hilbertSym (a₁ : K) a₂) := by
+        rw [← neg_mul _ ((u : K) ^ 2), hilbertSym.mul_right_square_eq]
+        exact LinearEquiv.det_toMatrix_ne_zero _ _ _
+      _ = s * ε := by simp [s, hε, hu]
+  rw [hi, show s = ε ↔ s * ε = 1 by sorry, heq]
+
+
+lemma represents_zero_iff_of_rank_three' (b : Basis (Fin 3) K V) :
     Q.Isotropic ↔
       hilbertSym (-1) (-Q.discr b) =
         HasseMinkoskiInvariant (Q.nondegenerate_associated_iff.mpr hQ).1 := by
@@ -207,6 +352,14 @@ lemma represents_zero_iff_of_rank_three (b : Basis (Fin 3) K V) :
   let a₀ := w ⟨0, by omega⟩
   let a₁ := w ⟨1, by omega⟩
   let a₂ := w ⟨2, by omega⟩
+  have hw' : Q.Equivalent (weightedSumSquares K ![a₀, a₁, a₂]) := by
+    apply hw.trans
+    apply (weightedSumSquaresCongr'_equivalent (finCongr hr) ?_)
+    ext n
+    cases n with
+    | mk n hn =>
+      have hn : n = 0 ∨ n = 1 ∨ n = 2  := by omega
+      aesop
   set s := hilbertSym (-1) (-Q.discr b)
   set ε := HasseMinkoskiInvariant (Q.nondegenerate_associated_iff.mpr hQ).1 with hε_def
   have hs1 : s = 1 ∨ s = -1 := hilbertSym.eq_one_or_neg_one_of_ne_zero (by simp)
@@ -214,15 +367,7 @@ lemma represents_zero_iff_of_rank_three (b : Basis (Fin 3) K V) :
   have hε1 : ε = 1 ∨ ε = -1 :=
     HasseMinkoskiInvariant.eq_one_or_neg_one (Q.nondegenerate_associated_iff.mpr hQ).1
   have hi : Q.Isotropic ↔ hilbertSym (-a₂ * a₀ : K) (-a₂ * a₁) = 1 := by
-    have hsq : (QuadraticMap.weightedSumSquares K w).Isotropic ↔
-        (weightedSumSquares K ![a₀, a₁, a₂]).Isotropic := by
-      apply (weightedSumSquaresCongr'_equivalent (finCongr hr) ?_).isotropic_iff
-      ext n
-      cases n with
-      | mk n hn =>
-        have hn : n = 0 ∨ n = 1 ∨ n = 2  := by omega
-        aesop
-    rw [hw.isotropic_iff, hsq, weightedSumSquares_isotropic_iff_hilbertSym_eq_one]
+    rw [hw'.isotropic_iff, weightedSumSquares_isotropic_iff_hilbertSym_eq_one]
   let ⟨fw⟩ := hw
   let u := (fw.toLinearEquiv.toMatrix (b.reindex (finCongr hr.symm))
       (Pi.basisFun K (Fin (finrank K V)))).det
@@ -238,10 +383,11 @@ lemma represents_zero_iff_of_rank_three (b : Basis (Fin 3) K V) :
       | mk n hn =>
         have hn : n = 0 ∨ n = 1 ∨ n = 2 := by omega
         aesop
-  have hε : ε = hilbertSym (a₀ : K) a₁ * hilbertSym (a₀ : K) a₂ * hilbertSym (a₁ : K) a₂ := sorry
+  have hε : ε = hilbertSym (a₀ : K) a₁ * hilbertSym (a₀ : K) a₂ * hilbertSym (a₁ : K) a₂ := by
+    simp [ε, HasseMinkoskiInvariant.eq_of_equivalent _ hw',
+      HasseMinkoskiInvariant.weightedSumSquares_three]
   have heq : hilbertSym (-a₂ * a₀ : K) (-a₂ * a₁) = s * ε := by
     calc hilbertSym (-a₂ * a₀ : K) (-a₂ * a₁)
-      _ = hilbertSym (a₂ * a₀ : K) (a₂ * a₁) := by sorry
       _ = hilbertSym (-1 : K) (- (a₀ * a₁ * a₂)) *
           (hilbertSym (a₀ : K) a₁ * hilbertSym (a₀ : K) a₂ * hilbertSym (a₁ : K) a₂) := by sorry
       _ = hilbertSym (-1 : K) (- (a₀ * a₁ * a₂ * u ^ 2)) *
