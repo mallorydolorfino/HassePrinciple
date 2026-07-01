@@ -88,7 +88,7 @@ private theorem Real.isotropic_prod_neg {w : Fin 2 → ℚˣ} {x : ℚˣ}
       (nondegenerate_weightedSumSquares _)) ((Pi.basisFun ℚ (Fin 2)).baseChange ℝ),
     RingHom.toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe, eq_ratCast,
     Nat.succ_eq_add_one, Nat.reduceAdd, Fin.zero_eta, Fin.isValue, Fin.mk_one,
-    HasseMinkoskiInvariant.of_baseChange_weightedSumSquares ℝ, Matrix.cons_val_zero,
+    hasseMinkoskiInv.of_baseChange_weightedSumSquares ℝ, Matrix.cons_val_zero,
     Matrix.cons_val_one, Matrix.cons_val_fin_one]
   rw [← hx, baseChange_discr, weightedSumSquares_discr]
   simp [Units.smul_def]
@@ -116,7 +116,7 @@ private theorem Padic.isotropic_prod_neg {p : ℕ} [Fact (Nat.Prime p)] {w : Fin
       (nondegenerate_weightedSumSquares _)) ((Pi.basisFun ℚ (Fin 2)).baseChange ℚ_[p]),
     RingHom.toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe, eq_ratCast,
     Nat.succ_eq_add_one, Nat.reduceAdd, Fin.zero_eta, Fin.isValue, Fin.mk_one,
-    HasseMinkoskiInvariant.of_baseChange_weightedSumSquares ℚ_[p], Matrix.cons_val_zero,
+    hasseMinkoskiInv.of_baseChange_weightedSumSquares ℚ_[p], Matrix.cons_val_zero,
     Matrix.cons_val_one, Matrix.cons_val_fin_one]
   rw [← hx, baseChange_discr, weightedSumSquares_discr]
   simp [Units.smul_def]
@@ -160,7 +160,7 @@ lemma isotropic_of_rank_four (hr : finrank ℚ V = 4) (hQ : Q.Nondegenerate)
     have h2 : (Q2.baseChange ℚ_[p]).represents (hp p).choose := (hp p).choose_spec.2
     rw [QuadraticForm.Padic.represents_iff_of_rank_two (nondegenerate_baseChange
       (nondegenerate_weightedSumSquares _)) ((Pi.basisFun ℚ (Fin 2)).baseChange ℚ_[p])] at h1 h2
-    · simp only [HasseMinkoskiInvariant.of_baseChange_weightedSumSquares ℚ_[p], Fin.zero_eta,
+    · simp only [hasseMinkoskiInv.of_baseChange_weightedSumSquares ℚ_[p], Fin.zero_eta,
         Fin.isValue, Matrix.cons_val_zero, eq_ratCast, Fin.mk_one, Matrix.cons_val_one,
         Matrix.cons_val_fin_one, Units.val_neg, Rat.cast_neg] at h1 h2
       refine ⟨?_, ?_⟩
@@ -175,7 +175,7 @@ lemma isotropic_of_rank_four (hr : finrank ℚ V = 4) (hQ : Q.Nondegenerate)
     have h2 : (Q2.baseChange ℝ).represents xr := hxr.2
     rw [QuadraticForm.Real.represents_iff_of_rank_two (nondegenerate_baseChange
       (nondegenerate_weightedSumSquares _)) ((Pi.basisFun ℚ (Fin 2)).baseChange ℝ)] at h1 h2
-    · simp only [HasseMinkoskiInvariant.of_baseChange_weightedSumSquares ℝ, Fin.zero_eta,
+    · simp only [hasseMinkoskiInv.of_baseChange_weightedSumSquares ℝ, Fin.zero_eta,
         Fin.isValue, Matrix.cons_val_zero, eq_ratCast, Fin.mk_one, Matrix.cons_val_one,
         Matrix.cons_val_fin_one, Units.val_neg, Rat.cast_neg] at h1 h2
       refine ⟨?_, ?_⟩
