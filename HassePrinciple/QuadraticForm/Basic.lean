@@ -21,6 +21,8 @@ public import Mathlib.LinearAlgebra.TensorProduct.Pi
 universe u
 namespace QuadraticForm
 
+-- TODO: add section variables (after Mathlib PR)
+
 /-- The product of two quadratic forms. -/
 abbrev prod {R M₁ M₂ : Type*} [CommSemiring R] [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁]
     [Module R M₂] (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) : QuadraticForm R (M₁ × M₂) :=
@@ -106,12 +108,34 @@ def weightedSumSquaresCongr' {ι κ S R : Type*} [Fintype ι] [Fintype κ] [Comm
     simp only [QuadraticMap.weightedSumSquares_apply, h, Function.comp_apply]
     exact Finset.sum_equiv f.symm (by simp) (by simp)
 
--- TODO: move
 lemma weightedSumSquaresCongr'_equivalent {ι κ S R : Type*} [Fintype ι] [Fintype κ] [CommSemiring R]
     [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
     {w : ι → S} {w' : κ → S} (f : ι ≃ κ) (h : w = w'.comp f) :
     (weightedSumSquares R w).Equivalent (weightedSumSquares R w') := ⟨weightedSumSquaresCongr' f h⟩
 
+open Module _root_.QuadraticMap in
+lemma IsometryEquiv.discr {R M N : Type*} [CommRing R] [Invertible (2 : R)]
+    [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+    {ι κ : Type u} [Fintype ι] [DecidableEq ι] [Fintype κ] [DecidableEq κ]
+    (e : ι ≃ κ) (b₁ : Basis ι R M) (b₂ : Basis κ R N) {Q₁ : QuadraticForm R M}
+    {Q₂ : QuadraticForm R N} (f : Q₁.IsometryEquiv Q₂) :
+    Q₁.discr b₁ = Q₂.discr b₂ * (f.toLinearEquiv.toMatrix (b₁.reindex e) b₂).det ^ 2 := by
+  calc Q₁.discr b₁
+    _ = Q₁.discr (b₁.reindex e) := by
+      simp only [QuadraticForm.discr, Matrix.det_apply]
+      rw [Finset.sum_equiv (t := Finset.univ) (e.equivCongr e) (by simp)]
+      intro g _
+      simp only [Equiv.equivCongr_apply_apply, toMatrix, LinearMap.toMatrix₂_apply,
+        associated_apply, End.smul_def, half_moduleEnd_apply_eq_half_smul, smul_eq_mul,
+        Basis.coe_reindex, Function.comp_apply, Equiv.symm_apply_apply]
+      rw [Equiv.Perm.sign_eq_sign_of_equiv g ((e.equivCongr e) g) e (by intro i; simp),
+        Finset.prod_equiv (t := Finset.univ) e (by simp)]
+      simp
+    _ = Q₂.discr b₂ * (f.toLinearEquiv.toMatrix (b₁.reindex e) b₂).det ^ 2 := by
+      have hcomp : Q₁ = Q₂.comp f := by ext; simp
+      simp [QuadraticForm.discr, hcomp,
+          toMatrix_comp (b₁.reindex e) b₂ _ (f.toLinearEquiv : M →ₗ[R] N)]
+      ring
 
 end QuadraticForm
 
@@ -144,28 +168,6 @@ lemma Equivalent.baseChange (A : Type*) [CommRing A] [Algebra R A] [Invertible (
       simpa [polar, ← hx, ← hy] using this
 
 open Module
-
-lemma _root_.QuadraticForm.IsometryEquiv.discr
-    {ι κ : Type u} [Fintype ι] [DecidableEq ι] [Fintype κ] [DecidableEq κ]
-    (e : ι ≃ κ) (b₁ : Basis ι R M) (b₂ : Basis κ R N) {Q₁ : QuadraticForm R M}
-    {Q₂ : QuadraticForm R N} (f : IsometryEquiv Q₁ Q₂) :
-    Q₁.discr b₁ = Q₂.discr b₂ * (f.toLinearEquiv.toMatrix (b₁.reindex e) b₂).det ^ 2 := by
-  calc Q₁.discr b₁
-    _ = Q₁.discr (b₁.reindex e) := by
-      simp only [QuadraticForm.discr, Matrix.det_apply]
-      rw [Finset.sum_equiv (t := Finset.univ) (e.equivCongr e) (by simp)]
-      intro g _
-      simp only [Equiv.equivCongr_apply_apply, toMatrix, LinearMap.toMatrix₂_apply,
-        associated_apply, End.smul_def, half_moduleEnd_apply_eq_half_smul, smul_eq_mul,
-        Basis.coe_reindex, Function.comp_apply, Equiv.symm_apply_apply]
-      rw [Equiv.Perm.sign_eq_sign_of_equiv g ((e.equivCongr e) g) e (by intro i; simp),
-        Finset.prod_equiv (t := Finset.univ) e (by simp)]
-      simp
-    _ = Q₂.discr b₂ * (f.toLinearEquiv.toMatrix (b₁.reindex e) b₂).det ^ 2 := by
-      have hcomp : Q₁ = Q₂.comp f := by ext; simp
-      simp [QuadraticForm.discr, hcomp,
-          toMatrix_comp (b₁.reindex e) b₂ _ (f.toLinearEquiv : M →ₗ[R] N)]
-      ring
 
 -- TODO: change in Mathlib
 theorem polarBilin_injective' :

@@ -122,7 +122,7 @@ theorem eq_one_iff (ha : a ≠ 0) (hb : b ≠ 0) (hc : ¬IsSquare b) :
     use (QuadraticAlgebra.mk (z/x) (y/x))
     symm
     rw [sub_eq_zero] at heq
-    have ha : x ≠ 0 := by
+    have hx : x ≠ 0 := by
       contrapose heq
       contrapose hc
       use z / y
