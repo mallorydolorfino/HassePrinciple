@@ -122,7 +122,7 @@ theorem eq_one_iff (ha : a ≠ 0) (hb : b ≠ 0) (hc : ¬IsSquare b) :
     use (QuadraticAlgebra.mk (z/x) (y/x))
     symm
     rw [sub_eq_zero] at heq
-    have hx : x ≠ 0 := by
+    have ha : x ≠ 0 := by
       contrapose heq
       contrapose hc
       use z / y
@@ -226,121 +226,99 @@ end Real
 
 section Padic
 
-variable {p : ℕ} [hp : Fact (Nat.Prime p)] {x y x' y' : (ℚ_[p])}
+variable {p : ℕ} [hp : Fact (Nat.Prime p)] {a b a' b' : (ℚ_[p])}
 
 open Padic PadicInt
 section odd
 
-variable (hp2 : p ≠ 2) (hx : x ≠ 0) (hy : y ≠ 0)
+variable (hp2 : p ≠ 2) (ha : a ≠ 0) (hb : b ≠ 0)
 
-/-- Main theorem for odd p, case v(x)=0, v(y)=0. -/
-lemma padic_odd_case00 (hx0 : x.valuation = 0) (hy0 : y.valuation = 0) :
-    (hilbertSym x y : ℚ) =
-      Int.negOnePow (valuation (x : ℚ_[p]) * valuation (y : ℚ_[p]) * epsilon (p2 hp2)) *
-      (PadicInt.legendreSym (unitPart (Units.mk0 x hx) : ℤ_[p])) ^ (valuation (y : ℚ_[p])) *
-      (PadicInt.legendreSym (unitPart (Units.mk0 y hy) : ℤ_[p])) ^ (valuation (x : ℚ_[p]))  := by
+/-- Main theorem for odd p, case v(a)=0, v(b)=0. -/
+lemma padic_odd_case00 (ha0 : a.valuation = 0) (hb0 : b.valuation = 0) :
+    (hilbertSym a b : ℚ) =
+      Int.negOnePow (valuation (a : ℚ_[p]) * valuation (b : ℚ_[p]) * epsilon (p2 hp2)) *
+      (legendreSym (unitPart (Units.mk0 a ha) : ℤ_[p])) ^ valuation (b : ℚ_[p]) *
+      (legendreSym (unitPart (Units.mk0 b hb) : ℤ_[p])) ^ valuation (a : ℚ_[p])  := by
   sorry
 
-/-- Main theorem for odd p, case v(x)=1, v(y)=0. -/
-lemma padic_odd_case10 (hx1 : valuation (x : ℚ_[p]) = 1) (hy0 : valuation (y : ℚ_[p]) = 0) :
-    (hilbertSym x y : ℚ) =
-      Int.negOnePow (valuation (x : ℚ_[p]) * valuation (y : ℚ_[p]) * epsilon (p2 hp2)) *
-      (PadicInt.legendreSym (unitPart (Units.mk0 x hx) : ℤ_[p])) ^ (valuation (y : ℚ_[p])) *
-      (PadicInt.legendreSym (unitPart (Units.mk0 y hy) : ℤ_[p])) ^ (valuation (x : ℚ_[p]))  := by
+/-- Main theorem for odd p, case v(a)=1, v(b)=0. -/
+lemma padic_odd_case10 (ha1 : valuation (a : ℚ_[p]) = 1) (hb0 : valuation (b : ℚ_[p]) = 0) :
+    (hilbertSym a b : ℚ) =
+      Int.negOnePow (valuation (a : ℚ_[p]) * valuation (b : ℚ_[p]) * epsilon (p2 hp2)) *
+      (legendreSym (unitPart (Units.mk0 a ha) : ℤ_[p])) ^ (valuation (b : ℚ_[p])) *
+      (legendreSym (unitPart (Units.mk0 b hb) : ℤ_[p])) ^ valuation (a : ℚ_[p]) := by
   sorry
 
-/-- Main theorem for odd p, case v(x)=1, v(y)=1. -/
-lemma padic_odd_case11 (hx1 : valuation (x : ℚ_[p]) = 1) (hy1 : valuation (y : ℚ_[p]) = 1) :
-    (hilbertSym x y : ℚ) =
-    Int.negOnePow (valuation (x : ℚ_[p]) * valuation (y : ℚ_[p]) * epsilon (p2 hp2)) *
-      (PadicInt.legendreSym (unitPart (Units.mk0 x hx) : ℤ_[p])) ^ (valuation (y : ℚ_[p])) *
-      (PadicInt.legendreSym (unitPart (Units.mk0 y hy) : ℤ_[p])) ^ (valuation (x : ℚ_[p]))  := by
+/-- Main theorem for odd p, case v(a)=1, v(b)=1. -/
+lemma padic_odd_case11 (ha1 : valuation (a : ℚ_[p]) = 1) (hb1 : valuation (b : ℚ_[p]) = 1) :
+    (hilbertSym a b : ℚ) =
+    Int.negOnePow (valuation (a : ℚ_[p]) * valuation (b : ℚ_[p]) * epsilon (p2 hp2)) *
+      (legendreSym (unitPart (Units.mk0 a ha) : ℤ_[p])) ^ (valuation (b : ℚ_[p])) *
+      (legendreSym (unitPart (Units.mk0 b hb) : ℤ_[p])) ^ valuation (a : ℚ_[p]) := by
   sorry
 
-/-- If p is an odd prime and x, y are nonzero in ℚ_[p], then the Hilbert symbol of x and y equals
-`(-1) ^ v(x) * v(y) * ε(p) ` times the product of the Legendre symbol of the unit part of x to v(y)
-times the Legendre symbol of the unit part of y to v(x). -/
+/-- If p is an odd prime and a, b are nonzero in ℚ_[p], then the Hilbert symbol (a, b)ₚ equals
+`(-1) ^ v(a) * v(b) * ε(p) ` times the product of the Legendre symbol of the unit part of a to v(b)
+times the Legendre symbol of the unit part of b to v(a). -/
 theorem padic_odd_eq :
-    (hilbertSym x y : ℚ) =
-      Int.negOnePow (valuation (x : ℚ_[p]) * valuation (y : ℚ_[p]) * epsilon (p2 hp2)) *
-      (PadicInt.legendreSym (unitPart (Units.mk0 x hx) : ℤ_[p])) ^ (valuation (y : ℚ_[p])) *
-      (PadicInt.legendreSym (unitPart (Units.mk0 y hy)  : ℤ_[p])) ^ (valuation (x : ℚ_[p])) := by
+    (hilbertSym a b : ℚ) =
+      Int.negOnePow (valuation (a : ℚ_[p]) * valuation (b : ℚ_[p]) * epsilon (p2 hp2)) *
+      (legendreSym (unitPart (Units.mk0 a ha) : ℤ_[p])) ^ (valuation (b : ℚ_[p])) *
+      (legendreSym (unitPart (Units.mk0 b hb)  : ℤ_[p])) ^ valuation (a : ℚ_[p]):= by
   sorry
 
 end odd
 
 section two
 
-variable {x y : (ℚ_[2])} (hx : x ≠ 0) (hy : y ≠ 0)
+variable {a b : (ℚ_[2])} (ha : a ≠ 0) (hb : b ≠ 0)
 
-/-- Main theorem for p=2, case v(x)=0, v(y)=0. -/
-lemma two_adic_case00 (hx0 : valuation (x : ℚ_[2]) = 0) (hy0 : valuation (y : ℚ_[2]) = 0) :
-    hilbertSym x y = Int.negOnePow (epsilon (unitPart (Units.mk0 x hx)) *
-      epsilon (unitPart (Units.mk0 y hy)) + valuation (x : ℚ_[2]) *
-      omega (unitPart (Units.mk0 y hy)) + valuation (y : ℚ_[2]) *
-      omega (unitPart (Units.mk0 x hx))) := by
+/-- Main theorem for p=2, case v(a)=0, v(b)=0. -/
+lemma two_adic_case00 (ha0 : valuation (a : ℚ_[2]) = 0) (hb0 : valuation (b : ℚ_[2]) = 0) :
+    hilbertSym a b = Int.negOnePow (epsilon (unitPart (Units.mk0 a ha)) *
+      epsilon (unitPart (Units.mk0 b hb)) + valuation (a : ℚ_[2]) *
+      omega (unitPart (Units.mk0 b hb)) + valuation (b : ℚ_[2]) *
+      omega (unitPart (Units.mk0 a ha))) := by
   sorry
 
-/-- Main theorem for p=2, case v(x)=1, v(y)=0. -/
-lemma two_adic_case10 (hx1 : valuation (x : ℚ_[2]) = 1) (hy0 : valuation (y : ℚ_[2]) = 0) :
-    hilbertSym x y = Int.negOnePow (epsilon (unitPart (Units.mk0 x hx)) *
-      epsilon (unitPart (Units.mk0 y hy)) + valuation (x : ℚ_[2]) *
-      omega (unitPart (Units.mk0 y hy)) + valuation (y : ℚ_[2]) *
-      omega (unitPart (Units.mk0 x hx))) := by
+/-- Main theorem for p=2, case v(a)=1, v(b)=0. -/
+lemma two_adic_case10 (ha1 : valuation (a : ℚ_[2]) = 1) (hb0 : valuation (b : ℚ_[2]) = 0) :
+    hilbertSym a b = Int.negOnePow (epsilon (unitPart (Units.mk0 a ha)) *
+      epsilon (unitPart (Units.mk0 b hb)) + valuation (a : ℚ_[2]) *
+      omega (unitPart (Units.mk0 b hb)) + valuation (b : ℚ_[2]) *
+      omega (unitPart (Units.mk0 a ha))) := by
   sorry
 
-/-- Main theorem for p=2, case v(x)=1, v(y)=1. -/
-lemma two_adic_case11 (hx1 : valuation (x : ℚ_[2]) = 1) (hy1 : valuation (y : ℚ_[2]) = 1) :
-    hilbertSym x y = Int.negOnePow (epsilon (unitPart (Units.mk0 x hx)) *
-      epsilon (unitPart (Units.mk0 y hy)) + valuation (x : ℚ_[2]) *
-      omega (unitPart (Units.mk0 y hy)) + valuation (y : ℚ_[2]) *
-      omega (unitPart (Units.mk0 x hx))) := by
+/-- Main theorem for p=2, case v(a)=1, v(b)=1. -/
+lemma two_adic_case11 (ha1 : valuation (a : ℚ_[2]) = 1) (hb1 : valuation (b : ℚ_[2]) = 1) :
+    hilbertSym a b = Int.negOnePow (epsilon (unitPart (Units.mk0 a ha)) *
+      epsilon (unitPart (Units.mk0 b hb)) + valuation (a : ℚ_[2]) *
+      omega (unitPart (Units.mk0 b hb)) + valuation (b : ℚ_[2]) *
+      omega (unitPart (Units.mk0 a ha))) := by
   sorry
 
-/-- If x, y are nonzero in ℚ_[2], then the Hilbert symbol of x and y equals
-`(-1) ^ (ε(u_x)ε(u_y) + v(x)ω(u_y) + v(y)ω(u_x))`, where u_x, u_y are the unit parts of x, y
+/-- If x, y are nonzero in ℚ_[2], then the Hilbert symbol (a, b)₂ equals
+`(-1) ^ (ε(u_a)ε(u_b) + v(a)ω(u_b) + v(b)ω(u_a))`, where u_a, u_b are the unit parts of a, b
 respectively. -/
 theorem two_adic_eq :
-    hilbertSym x y = Int.negOnePow (PadicInt.epsilon (unitPart (Units.mk0 x hx)) *
-      epsilon (unitPart (Units.mk0 y hy)) + valuation (x : ℚ_[2]) *
-      omega (unitPart (Units.mk0 y hy)) + valuation (y : ℚ_[2]) *
-      omega (unitPart (Units.mk0 x hx))) := by
+    hilbertSym a b = Int.negOnePow (PadicInt.epsilon (unitPart (Units.mk0 a ha)) *
+      epsilon (unitPart (Units.mk0 b hb)) + valuation (a : ℚ_[2]) *
+      omega (unitPart (Units.mk0 b hb)) + valuation (b : ℚ_[2]) *
+      omega (unitPart (Units.mk0 a ha))) := by
   sorry
 
 end two
 
 -- TODO: add to blueprint
 lemma padic_mul_left_eq :
-    hilbertSym (x * x') y = hilbertSym x y * hilbertSym x' y := by
+    hilbertSym (a * a') b = hilbertSym a b * hilbertSym a' b := by
   sorry
 
 lemma padic_mul_right_eq :
-    hilbertSym x (y * y') = hilbertSym x y * hilbertSym x y' := by
-  rw [comm, padic_mul_left_eq, comm, comm (b := y')]
-
+    hilbertSym a (b * b') = hilbertSym a b * hilbertSym a b' := by
+  rw [comm, padic_mul_left_eq, comm, comm (b := b')]
 
 end Padic
-
--- @[implicit_reducible]
--- noncomputable def field {K : Type} (hK : K = ℝ ∨ ∃ (p : ℕ) (_ : Fact (Nat.Prime p)), K = ℚ_[p]) :
---     Field K := by
---   classical
---   exact if h : K = ℝ then (by rw [h]; infer_instance) else by
---     have hp : ∃ p, ∃ (hp : Fact (Nat.Prime p)), K = ℚ_[p] := by tauto
---     let p := hp.choose
---     let := hp.choose_spec.choose
---     let hp := hp.choose_spec.choose_spec
---     rw [hp]; infer_instance
-
--- -- Not defeq
--- example : field (K := ℝ) (by simp) = Real.instField := by
---   simp [field]
-
--- example {K : Type} (hK : K = ℝ ∨ ∃ (p : ℕ) (hp : Fact (Nat.Prime p)), K = ℚ_[p])
---     (x x' y : K) :
---     letI := field hK
---     hilbertSym (x * x') y = hilbertSym x y * hilbertSym x' y := by
---   sorry
 
 /-
 # Global properties of the Hilbert symbol

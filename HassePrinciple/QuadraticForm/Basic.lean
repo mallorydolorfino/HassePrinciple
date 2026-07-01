@@ -91,6 +91,28 @@ lemma baseChange_discr {R n M₁ : Type*} [Fintype n] [DecidableEq n] (A : Type*
     (Q.baseChange A).discr (b.baseChange A) = algebraMap R A (Q.discr b) := by
   simp [discr, baseChange_toMatrix, Matrix.det_apply]
 
+-- This generalizes Mathlib's `weightedSumSquaresCongr`. -/
+def weightedSumSquaresCongr' {ι κ S R : Type*} [Fintype ι] [Fintype κ] [CommSemiring R]
+    [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
+    {w : ι → S} {w' : κ → S} (f : ι ≃ κ) (h : w = w'.comp f) :
+    (weightedSumSquares R w).IsometryEquiv (weightedSumSquares R w') where
+  toFun m k := m (f.symm k)
+  map_add' m n  := by ext; simp
+  map_smul' r m := by ext; simp
+  invFun m i    := m (f i)
+  left_inv m    := by simp
+  right_inv m   := by simp
+  map_app' m    := by
+    simp only [QuadraticMap.weightedSumSquares_apply, h, Function.comp_apply]
+    exact Finset.sum_equiv f.symm (by simp) (by simp)
+
+-- TODO: move
+lemma weightedSumSquaresCongr'_equivalent {ι κ S R : Type*} [Fintype ι] [Fintype κ] [CommSemiring R]
+    [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
+    {w : ι → S} {w' : κ → S} (f : ι ≃ κ) (h : w = w'.comp f) :
+    (weightedSumSquares R w).Equivalent (weightedSumSquares R w') := ⟨weightedSumSquaresCongr' f h⟩
+
+
 end QuadraticForm
 
 namespace QuadraticMap
