@@ -351,7 +351,7 @@ lemma two_adic_case11 (ha1 : valuation (a : ℚ_[2]) = 1) (hb1 : valuation (b : 
       omega (unitPart (Units.mk0 a ha))) := by
   sorry
 
-/-- If x, y are nonzero in ℚ_[2], then the Hilbert symbol (a, b)₂ equals
+/-- If a, b are nonzero in ℚ_[2], then the Hilbert symbol (a, b)₂ equals
 `(-1) ^ (ε(u_a)ε(u_b) + v(a)ω(u_b) + v(b)ω(u_a))`, where u_a, u_b are the unit parts of a, b
 respectively. -/
 theorem two_adic_eq :
