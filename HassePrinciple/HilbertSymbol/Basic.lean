@@ -226,7 +226,7 @@ theorem right_neg_mul : hilbertSym a (- (a * b)) = hilbertSym a b := by
   by_cases hzero : a = 0
   · simp [hzero, hilbertSym]
   · rw [← neg_mul]
-    exact right_mul_eq_of_eq_one b (right_neg_self_eq_one hzero)
+    exact right_mul_eq_of_eq_one (right_neg_self_eq_one hzero)
 
 @[simp]
 theorem left_neg_mul : hilbertSym (- (a * b)) b = hilbertSym a b := by
