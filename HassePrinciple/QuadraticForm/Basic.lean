@@ -238,7 +238,7 @@ open Module QuadraticMap
 
 -- The rank zero case of Hasse-Minkowski will follow trivially from this lemma:
 lemma anisotropic_of_rank_zero [IsDomain R] [StrongRankCondition R] [Module.Finite R M]
-    [IsTorsionFree R M] (hr : finrank R M = 0) (Q : QuadraticMap R M N) :
+    [IsTorsionFree R M] (hr : finrank R M = 0) {Q : QuadraticMap R M N} :
     Q.Anisotropic := by
   rw [finrank_zero_iff] at hr
   exact fun x _ ↦ Subsingleton.eq_zero x
@@ -276,6 +276,14 @@ lemma anisotropic_of_rank_one [IsDomain R] [StrongRankCondition R] [IsTorsionFre
       _ = Q (-r • x) := congrArg _ ((neg_smul r x).symm ▸ (eq_neg_of_add_eq_zero_right hrs))
       _ = 0 := by simp [QuadraticMap.map_smul, hx]
   simp_all
+
+lemma isotropic_iff_zero_of_rank_one [IsDomain R] [StrongRankCondition R] [IsTorsionFree R M]
+    [IsTorsionFree R N] (hr : finrank R M = 1) {Q : QuadraticMap R M N} :
+     Q.Isotropic ↔ Q = 0 := by
+  refine ⟨fun hQ ↦ by contrapose! hQ; exact anisotropic_of_rank_one hr hQ, fun hQ ↦ ?_⟩
+  simp only [hQ, Isotropic, Anisotropic, zero_apply, forall_const, not_forall]
+  exact (rank_pos_iff_exists_ne_zero).mp
+    (by rw [finrank, Cardinal.toNat_eq_one] at hr; simp [hr] : Module.rank R M > 0)
 
 theorem Equivalent.nondegenerate [IsDomain R] [IsTorsionFree R M] [IsTorsionFree R M']
     [Invertible (2 : R)] {Q : QuadraticMap R M N} {Q' : QuadraticMap R M' N} (h : Q.Equivalent Q')

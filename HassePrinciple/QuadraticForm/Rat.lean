@@ -34,7 +34,10 @@ variable {Q}
 -- The easy implication of the Hasse-Minkowski theorem.
 theorem _root_.QuadraticMap.Isotropic.everywhereLocallyIsotropic (h : Q.Isotropic) :
     Q.EverywhereLocallyIsotropic := by
-  sorry
+  obtain ⟨x, ⟨hx, hxne0⟩⟩ := represents_zero_iff_isotropic.mpr h
+  refine ⟨fun _ _ => ?_, ?_⟩ <;>
+  rw [← represents_zero_iff_isotropic] <;>
+  exact ⟨1 ⊗ₜ x, ⟨by simp [hx], by simp [hxne0]⟩⟩
 
 open QuadraticMap
 
@@ -50,17 +53,36 @@ theorem HasseMinkowski_of_degenerate (Q : QuadraticForm ℚ V) (hQ : ¬ Q.Nondeg
 
 namespace EverywhereLocallyIsotropic
 
-lemma isotropic_of_rank_zero (hr : Module.finrank ℚ V = 0) (hQ : Q.Nondegenerate)
+lemma isotropic_of_rank_zero [Module.Finite ℚ V] (hr : Module.finrank ℚ V = 0) (_ : Q.Nondegenerate)
     (hQ' : Q.EverywhereLocallyIsotropic) :
-    Q.Isotropic := sorry
+    Q.Isotropic := by
+  have h' := hQ'.2
+  contrapose! h'
+  exact QuadraticMap.anisotropic_of_rank_zero (by simp [hr])
 
-lemma isotropic_of_rank_one (hr : Module.finrank ℚ V = 1) (hQ : Q.Nondegenerate)
+lemma isotropic_of_rank_one (hr : Module.finrank ℚ V = 1) (_ : Q.Nondegenerate)
     (hQ' : Q.EverywhereLocallyIsotropic) :
-    Q.Isotropic := sorry
+    Q.Isotropic := by
+  have QR_zero := (QuadraticMap.isotropic_iff_zero_of_rank_one (by simp [hr])).mp hQ'.2
+  simp only [baseChange_ext_iff, baseChange_tmul, mul_one, Rat.smul_one_eq_cast,
+    QuadraticMap.zero_apply, Rat.cast_eq_zero] at QR_zero
+  exact (QuadraticMap.isotropic_iff_zero_of_rank_one hr).mpr (by simpa [Q.ext_iff] using QR_zero)
 
-lemma isotropic_of_rank_two (hr : Module.finrank ℚ V = 2) (hQ : Q.Nondegenerate)
-    (hQ' : Q.EverywhereLocallyIsotropic) :
-    Q.Isotropic := sorry
+open Equivalent in
+lemma isotropic_of_rank_two [FiniteDimensional ℚ V] [NeZero (Module.finrank ℚ V)]
+    (hr : Module.finrank ℚ V = 2) (hQ : Q.Nondegenerate) (hQ' : Q.EverywhereLocallyIsotropic) :
+    Q.Isotropic := by
+  obtain ⟨w, hw⟩ := QuadraticForm.equivalent_weightedSumSquares Q
+  obtain ⟨hQ'f, hQ'R⟩ := hQ'
+  rw [← represents_zero_iff_isotropic] at *
+
+  rw [represents_iff hw]
+  rw [represents_iff
+    ((baseChange ℝ hw).trans (QuadraticForm.baseChange_weightedSumSquares ℚ ℝ w))] at hQ'R
+  obtain ⟨x, hx⟩ := hQ'R
+  simp only [eq_ratCast, weightedSumSquares_apply, smul_eq_mul, ne_eq] at hx
+
+  sorry
 
 end EverywhereLocallyIsotropic
 
