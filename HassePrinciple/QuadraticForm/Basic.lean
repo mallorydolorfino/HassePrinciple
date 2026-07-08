@@ -279,11 +279,10 @@ lemma anisotropic_of_rank_one [IsDomain R] [StrongRankCondition R] [IsTorsionFre
 
 lemma isotropic_iff_zero_of_rank_one [IsDomain R] [StrongRankCondition R] [IsTorsionFree R M]
     [IsTorsionFree R N] (hr : finrank R M = 1) {Q : QuadraticMap R M N} :
-     Q.Isotropic ↔ Q = 0 := by
-  refine ⟨fun hQ ↦ by contrapose! hQ; exact anisotropic_of_rank_one hr hQ, fun hQ ↦ ?_⟩
-  simp only [hQ, Isotropic, Anisotropic, zero_apply, forall_const, not_forall]
-  exact (rank_pos_iff_exists_ne_zero).mp
-    (by rw [finrank, Cardinal.toNat_eq_one] at hr; simp [hr] : Module.rank R M > 0)
+    Q.Isotropic ↔ Q = 0 :=
+  ⟨fun hQ ↦ by contrapose! hQ; exact anisotropic_of_rank_one hr hQ,
+    fun hQ ↦ by simp [hQ, Isotropic, Anisotropic, ← rank_pos_iff_exists_ne_zero (R := R),
+      rank_eq_one_iff_finrank_eq_one.mpr hr]⟩
 
 theorem Equivalent.nondegenerate [IsDomain R] [IsTorsionFree R M] [IsTorsionFree R M']
     [Invertible (2 : R)] {Q : QuadraticMap R M N} {Q' : QuadraticMap R M' N} (h : Q.Equivalent Q')
