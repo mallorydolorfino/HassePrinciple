@@ -45,51 +45,30 @@ namespace legendreSym
 lemma intCast (z : ℤ) : legendreSym (z : ℤ_[p]) = _root_.legendreSym p z := by
   simp [legendreSym, _root_.legendreSym, quadraticCharFun]
 
-/-- Helper lemma for next theorem -/
-lemma legendreSymMod (z : ℤ_[p]) : legendreSym (z) = legendreSym (z.zmodRepr : ℤ_[p]) := by
-  unfold legendreSym
-  simp only [MulChar.compMonoidHom_apply, quadraticChar_apply, map_natCast]
-  exact quadraticCharFun.congr_simp (ZMod p) (toZMod z) (↑z.zmodRepr) rfl
-
-/-- Another helper lemma for next theorem -/
-lemma helper (a : ℤ_[p]) : (a.toZMod) ^ (p / 2) = (a.zmodRepr) ^ (p / 2) := by
-    exact ZMod.valMinAbs_inj.mp rfl
-
-/-- Even another helper lemma -/
-lemma modhelper (a : ℤ_[p]) : legendreSym a  =
-_root_.legendreSym p (a.zmodRepr) := by
-  rw [legendreSymMod]
-  apply intCast
-
 /-- We have the congruence `legendreSym a ≡ a ^ (p / 2) mod p`. -/
 theorem eq_pow : (legendreSym a : ZMod p) = (a.toZMod) ^ (p / 2) := by
-  rw [helper, modhelper, _root_.legendreSym.eq_pow]
-  simp only [Int.cast_natCast]
+  calc (legendreSym a : ZMod p)
+    _ = (legendreSym (a.zmodRepr : ℤ_[p]) : ZMod p) := by
+      simp [legendreSym, (ZMod.intCast_eq_intCast_iff' (quadraticCharFun (ZMod p) (toZMod a))
+        (quadraticCharFun (ZMod p) a.zmodRepr) p).mpr rfl]
+    _ = _root_.legendreSym p (a.zmodRepr) := by simp [legendreSym, _root_.legendreSym]
+    _ = (a.zmodRepr) ^ (p / 2) := by simp [_root_.legendreSym.eq_pow]
+    _ = (a.toZMod) ^ (p / 2) := ZMod.valMinAbs_inj.mp rfl
 
 /-- If `a` is a p-adic unit, then `legendreSym a` is `1` or `-1`. -/
 theorem eq_one_or_neg_one (ha : IsUnit a) : legendreSym a = 1 ∨ legendreSym a = -1 := by
-  rw [legendreSym]
-  refine Int.isUnit_eq_one_or ?_
-  exact IsUnit.map ((quadraticChar (ZMod p)).compMonoidHom toZMod) ha
+  exact Int.isUnit_eq_one_or (IsUnit.map ((quadraticChar (ZMod p)).compMonoidHom toZMod) ha)
 
 /-- If a is a p-adic unit, then `legendreSym a = -1` iff `legendreSym a ≠ 1`. -/
 theorem eq_neg_one_iff_not_one (ha : IsUnit a) :
     legendreSym a = -1 ↔ ¬legendreSym a = 1 := by
-  constructor
-  · lia
-  · have := eq_one_or_neg_one ha
-    intro h
-    tauto
+  have := eq_one_or_neg_one ha
+  lia
 
 /-- The Legendre symbol of `p` and `a` is zero iff `p ∣ a`. -/
 theorem eq_zero_iff : legendreSym a = 0 ↔ ¬ IsUnit a := by
-  constructor
-  · contrapose
-    intro h
-    have := eq_one_or_neg_one h
-    lia
-  · intro h
-    rw [MulChar.map_nonunit legendreSym h]
+  refine ⟨fun _ h ↦ by have := eq_one_or_neg_one h; lia, fun h ↦ by rw [MulChar.map_nonunit
+  legendreSym h]⟩
 
 /-- The Legendre symbol is a homomorphism of monoids with zero. -/
 @[simps]
@@ -110,14 +89,9 @@ theorem sq_one' (ha : IsUnit a) : legendreSym (a ^ 2) = 1 := by
 
 /-- If `a` is a unit, then `legendreSym a = 1` iff `a` is a square mod `p`. -/
 theorem eq_one_iff (ha : IsUnit a) : legendreSym a = 1 ↔ IsSquare (a.toZMod) := by
-  rw [legendreSym]
-  rw [@MulChar.compMonoidHom_apply]
-  refine quadraticChar_one_iff_isSquare ?_
-  refine (ZMod.val_ne_zero (toZMod a)).mp ?_
-  rw [PadicInt.isUnit_iff] at ha
-  rw [PadicInt.val_toZMod_eq_zmodRepr]
-  rw [← PadicInt.norm_natCast_zmodRepr_eq_one_iff_ne]
-  exact norm_natCast_zmodRepr_eq_one_iff.mpr ha
+  rw [legendreSym, MulChar.compMonoidHom_apply, quadraticChar_one_iff_isSquare]
+  rw [← ZMod.val_ne_zero (toZMod a), val_toZMod_eq_zmodRepr, ← norm_natCast_zmodRepr_eq_one_iff_ne,
+    norm_natCast_zmodRepr_eq_one_iff.mpr (isUnit_iff.mp ha)]
 
 /-- `legendreSym p a = -1` iff `a` is a nonsquare mod `p`. -/
 theorem eq_neg_one_iff (ha : IsUnit a) :
