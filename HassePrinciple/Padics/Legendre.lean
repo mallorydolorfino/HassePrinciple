@@ -56,8 +56,8 @@ theorem eq_pow : (legendreSym a : ZMod p) = (a.toZMod) ^ (p / 2) := by
     _ = (a.toZMod) ^ (p / 2) := ZMod.valMinAbs_inj.mp rfl
 
 /-- If `a` is a p-adic unit, then `legendreSym a` is `1` or `-1`. -/
-theorem eq_one_or_neg_one (ha : IsUnit a) : legendreSym a = 1 ∨ legendreSym a = -1 := by
-  exact Int.isUnit_eq_one_or (IsUnit.map ((quadraticChar (ZMod p)).compMonoidHom toZMod) ha)
+theorem eq_one_or_neg_one (ha : IsUnit a) : legendreSym a = 1 ∨ legendreSym a = -1 :=
+  Int.isUnit_eq_one_or (IsUnit.map ((quadraticChar (ZMod p)).compMonoidHom toZMod) ha)
 
 /-- If a is a p-adic unit, then `legendreSym a = -1` iff `legendreSym a ≠ 1`. -/
 theorem eq_neg_one_iff_not_one (ha : IsUnit a) :
@@ -66,8 +66,8 @@ theorem eq_neg_one_iff_not_one (ha : IsUnit a) :
   lia
 
 /-- The Legendre symbol of `p` and `a` is zero iff `p ∣ a`. -/
-theorem eq_zero_iff : legendreSym a = 0 ↔ ¬ IsUnit a := by
-  refine ⟨fun _ h ↦ by have := eq_one_or_neg_one h; lia, fun h ↦ by rw [MulChar.map_nonunit
+theorem eq_zero_iff : legendreSym a = 0 ↔ ¬ IsUnit a :=
+  ⟨fun _ h ↦ by have := eq_one_or_neg_one h; lia, fun h ↦ by rw [MulChar.map_nonunit
   legendreSym h]⟩
 
 /-- The Legendre symbol is a homomorphism of monoids with zero. -/
