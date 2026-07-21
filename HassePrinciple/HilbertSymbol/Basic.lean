@@ -239,6 +239,18 @@ theorem right_minus_self_mul (ha : a ≠ 1) :
     hilbertSym a ((1 - a) * b) = hilbertSym a b := by
   by_cases hzero : a = 0 <;> aesop
 
+section Bilin
+
+variable (k) in
+class HasBilinHilbertSym : Prop where
+  mul_left_eq {a a' b : k} : hilbertSym (a * a') b = hilbertSym a b * hilbertSym a' b
+
+lemma HasBilinHilbertSym.mul_right_eq [HasBilinHilbertSym k] :
+    hilbertSym a (b * b') = hilbertSym a b * hilbertSym a b' := by
+  rw [comm, mul_left_eq, comm, comm (b := b')]
+
+end Bilin
+
 end Field
 
 /-
@@ -272,26 +284,21 @@ theorem real_eq (ha : a ≠ 0) (hb : b ≠ 0) :
     have : 0 ≤ -b * y^2 := by positivity [Left.nonneg_neg_iff.mpr h.2]
     grind
 
--- aesop could finish the proof earlier, but it is quite slow
-lemma real_mul_left_eq :
-    hilbertSym (a * a') b = hilbertSym a b * hilbertSym a' b := by
-  by_cases h0 : a = 0 ∨ a' = 0 ∨ b = 0
-  · rcases h0 with h0 | h0 | h0 <;> simp [hilbertSym, h0]
-  · simp  only [not_or] at h0
-    obtain ⟨ha, ha', hb⟩ := h0
-    rw [real_eq ha hb, real_eq ha' hb, real_eq (by positivity) hb]
-    rcases lt_or_gt_of_ne (Ne.symm ha) with ha | ha
-    · simp [ha]
-    · by_cases hb0 : 0 < b
-      · simp [hb0]
-      · simp [not_lt.mpr ha.le, hb0]
-        by_cases ha'0 : 0 < a'
-        · simp [ha'0, ha.le]
-        · simp [ha'0, mul_pos_of_neg_of_neg ha (lt_of_le_of_ne (not_lt.mp ha'0) ha')]
-
-lemma real_mul_right_eq :
-    hilbertSym a (b * b') = hilbertSym a b * hilbertSym a b' := by
-  rw [comm, real_mul_left_eq, comm, comm (b := b')]
+instance _root_.Real.instHasBilinHilbertSym : HasBilinHilbertSym ℝ where
+  mul_left_eq {a a' b} := by
+    by_cases h0 : a = 0 ∨ a' = 0 ∨ b = 0
+    · rcases h0 with h0 | h0 | h0 <;> simp [hilbertSym, h0]
+    · simp  only [not_or] at h0
+      obtain ⟨ha, ha', hb⟩ := h0
+      rw [real_eq ha hb, real_eq ha' hb, real_eq (by positivity) hb]
+      rcases lt_or_gt_of_ne (Ne.symm ha) with ha | ha
+      · simp [ha]
+      · by_cases hb0 : 0 < b
+        · simp [hb0]
+        · simp [not_lt.mpr ha.le, hb0]
+          by_cases ha'0 : 0 < a'
+          · simp [ha'0, ha.le]
+          · simp [ha'0, mul_pos_of_neg_of_neg ha (lt_of_le_of_ne (not_lt.mp ha'0) ha')]
 
 end Real
 
@@ -380,14 +387,9 @@ theorem two_adic_eq :
 
 end two
 
--- TODO: add to blueprint
-lemma padic_mul_left_eq :
-    hilbertSym (a * a') b = hilbertSym a b * hilbertSym a' b := by
-  sorry
-
-lemma padic_mul_right_eq :
-    hilbertSym a (b * b') = hilbertSym a b * hilbertSym a b' := by
-  rw [comm, padic_mul_left_eq, comm, comm (b := b')]
+instance _root_.Padic.instHasBilinHilbertSym : HasBilinHilbertSym ℚ_[p] where
+  mul_left_eq {a a' b} := by
+    sorry
 
 end Padic
 
