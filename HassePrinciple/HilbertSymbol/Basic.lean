@@ -253,7 +253,24 @@ variable {a b a' b' : ℝ}
 b is positive. -/
 theorem real_eq (ha : a ≠ 0) (hb : b ≠ 0) :
     hilbertSym a b = if 0 < a ∨ 0 < b then 1 else -1 := by
-  sorry
+  split_ifs with h
+  · wlog ha_pos : 0 < a with h1
+    · rw [comm, h1 hb ha (by tauto) (by tauto)]
+    simp only [hilbertSym, ha, hb, or_self, reduceIte, ne_eq, Prod.mk.injEq, not_and,
+      Int.reduceNeg, ite_eq_left_iff, not_exists, reduceCtorEq, imp_false, not_forall,
+      Decidable.not_not]
+    exact ⟨Real.sqrt a, 1, 0, by simp, by simp [Real.sq_sqrt (by linarith)]⟩
+  · simp only [not_or, not_lt] at h
+    simp only [hilbertSym, ha, hb, or_self, ↓reduceIte, ne_eq, Prod.mk.injEq, not_and, sub_sub,
+      Int.reduceNeg, ite_eq_right_iff, reduceCtorEq, imp_false, not_exists,
+      sub_eq_add_neg _ ( _ + _)]
+    intro z x y h0
+    have : 0 ≤ z ^ 2 := by positivity
+    have {r s : ℝ} (hr : 0 ≤ r) (hs : 0 ≤ s) (hadd : r + s = 0) : r = 0 ∧ s = 0 :=
+      (add_eq_zero_iff_of_nonneg hr hs).mp hadd
+    have : 0 ≤ -a * x^2 := by positivity [Left.nonneg_neg_iff.mpr h.1]
+    have : 0 ≤ -b * y^2 := by positivity [Left.nonneg_neg_iff.mpr h.2]
+    grind
 
 -- aesop could finish the proof earlier, but it is quite slow
 lemma real_mul_left_eq :
