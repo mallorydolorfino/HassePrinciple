@@ -43,63 +43,36 @@ private theorem weightedSumSquares_equiv_prod (w : Fin 4 → ℚˣ) :
       QuadraticMap.neg_apply, Units.neg_smul, neg_add_rev, neg_neg, Fin.sum_univ_four]
     ring⟩
 
-private theorem Real.isotropic_prod_neg {w : Fin 2 → ℚˣ} {x : ℚˣ}
-    (hx : hilbertSym (x : ℝ) (-(w ⟨0, by omega⟩) * (w ⟨1, by omega⟩)) =
-      hilbertSym (w ⟨0, by omega⟩ : ℝ) (w ⟨1, by omega⟩)) :
-    Isotropic  ((prod (weightedSumSquares ℚ w) (weightedSumSquares ℚ ![-x])).baseChange ℝ) := by
-  have : (QuadraticForm.baseChange ℝ
-      (prod (weightedSumSquares ℚ ![w ⟨0, by omega⟩, w ⟨1, by omega⟩])
-      (weightedSumSquares ℚ ![-x]))).Equivalent
-    (prod (QuadraticForm.baseChange ℝ
-      (weightedSumSquares ℚ ![w ⟨0, by omega⟩, w ⟨1, by omega⟩]))
-      (weightedSumSquares ℝ
-        ![-(Units.map (algebraMap ℚ ℝ).toMonoidHom x)])) := by
-    apply (baseChange_prod _ _).trans ((Equivalent.refl _).prod ?_)
-    convert (baseChange_weightedSumSquares ℚ ℝ ![-(x : ℚˣ)])
-    · ext; simp [Units.smul_def]
-    · ext; simp [Units.smul_def]
-  apply this.symm.isotropic
-  simp only [Fin.zero_eta, Fin.isValue, Fin.mk_one, neg_mul] at hx
-  simp only [← represents_iff_sub_isotropic
-      (nondegenerate_baseChange (nondegenerate_weightedSumSquares _)),
-    Real.represents_iff_of_rank_two (nondegenerate_baseChange
-      (nondegenerate_weightedSumSquares _)) ((Pi.basisFun ℚ (Fin 2)).baseChange ℝ),
-    RingHom.toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe, eq_ratCast,
-    Nat.succ_eq_add_one, Nat.reduceAdd, Fin.zero_eta, Fin.isValue, Fin.mk_one,
-    hasseMinkoskiInv.of_baseChange_weightedSumSquares ℝ, Matrix.cons_val_zero,
-    Matrix.cons_val_one, Matrix.cons_val_fin_one]
-  rw [← hx, baseChange_discr, weightedSumSquares_discr]
-  simp [Units.smul_def]
-
-private theorem Padic.isotropic_prod_neg {p : ℕ} [Fact (Nat.Prime p)] {w : Fin 2 → ℚˣ} {x : ℚˣ}
-    (hx : hilbertSym (x : ℚ_[p]) (-(w ⟨0, by omega⟩) * (w ⟨1, by omega⟩)) =
-      hilbertSym (w ⟨0, by omega⟩ : ℚ_[p]) (w ⟨1, by omega⟩)) :
-    Isotropic  ((prod (weightedSumSquares ℚ w) (weightedSumSquares ℚ ![-x])).baseChange ℚ_[p]) := by
-  have : (QuadraticForm.baseChange ℚ_[p]
-      (prod (weightedSumSquares ℚ ![w ⟨0, by omega⟩, w ⟨1, by omega⟩])
-      (weightedSumSquares ℚ ![-x]))).Equivalent
-    (prod (QuadraticForm.baseChange ℚ_[p]
-      (weightedSumSquares ℚ ![w ⟨0, by omega⟩, w ⟨1, by omega⟩]))
-      (weightedSumSquares ℚ_[p]
-        ![-(Units.map (algebraMap ℚ ℚ_[p]).toMonoidHom x)])) := by
-    apply (baseChange_prod _ _).trans ((Equivalent.refl _).prod ?_)
-    convert (baseChange_weightedSumSquares ℚ ℚ_[p] ![-(x : ℚˣ)])
-    · ext; simp [Units.smul_def]
-    · ext; simp [Units.smul_def]
-  apply this.symm.isotropic
-  simp only [Fin.zero_eta, Fin.isValue, Fin.mk_one, neg_mul] at hx
-  simp only [← represents_iff_sub_isotropic
-      (nondegenerate_baseChange (nondegenerate_weightedSumSquares _)),
-    Padic.represents_iff_of_rank_two (nondegenerate_baseChange
-      (nondegenerate_weightedSumSquares _)) ((Pi.basisFun ℚ (Fin 2)).baseChange ℚ_[p]),
-    RingHom.toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe, eq_ratCast,
-    Nat.succ_eq_add_one, Nat.reduceAdd, Fin.zero_eta, Fin.isValue, Fin.mk_one,
-    hasseMinkoskiInv.of_baseChange_weightedSumSquares ℚ_[p], Matrix.cons_val_zero,
-    Matrix.cons_val_one, Matrix.cons_val_fin_one]
-  rw [← hx, baseChange_discr, weightedSumSquares_discr]
-  simp [Units.smul_def]
-
 open hilbertSym
+
+private theorem isotropic_prod_neg {k : Type*} [Field k] [CharZero k] [HasBilinHilbertSym k]
+    [Algebra ℚ k] {w : Fin 2 → ℚˣ} {x : ℚˣ}
+    (hx : hilbertSym (x : k) (-(w ⟨0, by omega⟩) * (w ⟨1, by omega⟩)) =
+      hilbertSym (w ⟨0, by omega⟩ : k) (w ⟨1, by omega⟩)) :
+    Isotropic  ((prod (weightedSumSquares ℚ w) (weightedSumSquares ℚ ![-x])).baseChange k) := by
+  have : (QuadraticForm.baseChange k
+      (prod (weightedSumSquares ℚ ![w ⟨0, by omega⟩, w ⟨1, by omega⟩])
+      (weightedSumSquares ℚ ![-x]))).Equivalent
+    (prod (QuadraticForm.baseChange k
+      (weightedSumSquares ℚ ![w ⟨0, by omega⟩, w ⟨1, by omega⟩]))
+      (weightedSumSquares k
+        ![-(Units.map (algebraMap ℚ k).toMonoidHom x)])) := by
+    apply (baseChange_prod _ _).trans ((Equivalent.refl _).prod ?_)
+    convert (baseChange_weightedSumSquares ℚ k ![-(x : ℚˣ)])
+    · ext; simp [Units.smul_def]
+    · ext; simp [Units.smul_def]
+  apply this.symm.isotropic
+  simp only [Fin.zero_eta, Fin.isValue, Fin.mk_one, neg_mul] at hx
+  simp only [← represents_iff_sub_isotropic
+      (nondegenerate_baseChange (nondegenerate_weightedSumSquares _)),
+    represents_iff_of_rank_two (nondegenerate_baseChange
+      (nondegenerate_weightedSumSquares _)) ((Pi.basisFun ℚ (Fin 2)).baseChange k),
+    RingHom.toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe, eq_ratCast,
+    Nat.succ_eq_add_one, Nat.reduceAdd, Fin.zero_eta, Fin.isValue, Fin.mk_one,
+    hasseMinkoskiInv.of_baseChange_weightedSumSquares k, Matrix.cons_val_zero,
+    Matrix.cons_val_one, Matrix.cons_val_fin_one]
+  rw [← hx, baseChange_discr, weightedSumSquares_discr]
+  simp [Units.smul_def]
 
 /-- Rank 4 case of Hasse-Minkowski. -/
 lemma isotropic_of_rank_four (hr : finrank ℚ V = 4) (hQ : Q.Nondegenerate)
@@ -134,7 +107,7 @@ lemma isotropic_of_rank_four (hr : finrank ℚ V = 4) (hQ : Q.Nondegenerate)
         hilbertSym (hp p).choose.1 (-(w 2) * w 3) = hilbertSym (-w 2 : ℚ_[p]) (-w 3) := by
     have h1 : (Q1.baseChange ℚ_[p]).represents (hp p).choose := (hp p).choose_spec.1
     have h2 : (Q2.baseChange ℚ_[p]).represents (hp p).choose := (hp p).choose_spec.2
-    rw [QuadraticForm.Padic.represents_iff_of_rank_two (nondegenerate_baseChange
+    rw [represents_iff_of_rank_two (nondegenerate_baseChange
       (nondegenerate_weightedSumSquares _)) ((Pi.basisFun ℚ (Fin 2)).baseChange ℚ_[p])] at h1 h2
     · simp only [hasseMinkoskiInv.of_baseChange_weightedSumSquares ℚ_[p], Fin.zero_eta,
         Fin.isValue, Matrix.cons_val_zero, eq_ratCast, Fin.mk_one, Matrix.cons_val_one,
@@ -147,7 +120,7 @@ lemma isotropic_of_rank_four (hr : finrank ℚ V = 4) (hQ : Q.Nondegenerate)
       hilbertSym xr.1 (-(w 2) * w 3) =hilbertSym (-w 2 : ℝ) (-w 3) := by
     have h1 : (Q1.baseChange ℝ).represents xr := hxr.1
     have h2 : (Q2.baseChange ℝ).represents xr := hxr.2
-    rw [QuadraticForm.Real.represents_iff_of_rank_two (nondegenerate_baseChange
+    rw [represents_iff_of_rank_two (nondegenerate_baseChange
       (nondegenerate_weightedSumSquares _)) ((Pi.basisFun ℚ (Fin 2)).baseChange ℝ)] at h1 h2
     · simp only [hasseMinkoskiInv.of_baseChange_weightedSumSquares ℝ, Fin.zero_eta,
         Fin.isValue, Matrix.cons_val_zero, eq_ratCast, Fin.mk_one, Matrix.cons_val_one,
@@ -182,14 +155,14 @@ lemma isotropic_of_rank_four (hr : finrank ℚ V = 4) (hQ : Q.Nondegenerate)
   · rw [represents_iff_sub_isotropic (nondegenerate_weightedSumSquares _)]
     exact isotropic_of_rank_three _ (by simp) (nondegenerate_prod
       (nondegenerate_weightedSumSquares _) (nondegenerate_weightedSumSquares _))
-      ⟨fun p _ ↦ Padic.isotropic_prod_neg (hx.1 ⟨p, Fact.out⟩).1, Real.isotropic_prod_neg hx.2.1⟩
+      ⟨fun p _ ↦ isotropic_prod_neg (hx.1 ⟨p, Fact.out⟩).1, isotropic_prod_neg hx.2.1⟩
   · rw [represents_iff_sub_isotropic (nondegenerate_weightedSumSquares _)]
     apply isotropic_of_rank_three _ (by simp) (nondegenerate_prod
       (nondegenerate_weightedSumSquares _) (nondegenerate_weightedSumSquares _))
     refine ⟨fun p _ ↦ ?_, ?_⟩
-    · apply Padic.isotropic_prod_neg (w := ![-w ⟨2, by omega⟩, -w ⟨3, by omega⟩])
+    · apply isotropic_prod_neg (w := ![-w ⟨2, by omega⟩, -w ⟨3, by omega⟩])
       convert (hx.1 ⟨p, Fact.out⟩).2 using 1 <;> simp
-    · apply Real.isotropic_prod_neg (w := ![-w ⟨2, by omega⟩, -w ⟨3, by omega⟩])
+    · apply isotropic_prod_neg (w := ![-w ⟨2, by omega⟩, -w ⟨3, by omega⟩])
       convert hx.2.2 using 1 <;> simp
 
 end QuadraticForm.EverywhereLocallyIsotropic
