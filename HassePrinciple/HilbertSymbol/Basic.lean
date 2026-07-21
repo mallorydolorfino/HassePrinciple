@@ -242,6 +242,10 @@ theorem right_minus_self_mul (ha : a ≠ 1) :
 section Bilin
 
 variable (k) in
+/-- We say that `HasBilinHilbertSym k` if the Hilbert symbol on `k` is bilinear, i.e., if
+  `hilbertSym (a * a') b = hilbertSym a b * hilbertSym a' b` for all `a, a', b` in `k`.
+  Note that, by the commutativity property of the Hilbert symbol, this also implies
+  `hilbertSym a (b * b') = hilbertSym a b * hilbertSym a b'` for all `a, b, b'` in k. -/
 class HasBilinHilbertSym : Prop where
   mul_left_eq {a a' b : k} : hilbertSym (a * a') b = hilbertSym a b * hilbertSym a' b
 
@@ -412,3 +416,5 @@ theorem prod_eq_one (a b : ℚˣ) :
   sorry
 
 end hilbertSym
+
+#lint
