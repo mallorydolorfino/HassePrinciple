@@ -176,8 +176,8 @@ lemma represents_zero_iff_of_rank_three (b : Basis (Fin 3) k V) :
     Q.Isotropic ↔
       hilbertSym (-1) (-Q.discr b) =
         hasseMinkoskiInv (Q.nondegenerate_associated_iff.mpr hQ).1 := by
-  obtain ⟨w, hw⟩ := equivalent_weightedSumSquares_three_units_of_nondegenerate
-    ( by simp [finrank_eq_card_basis b]) (Q.nondegenerate_associated_iff.mpr hQ).1
+  obtain ⟨w, hw⟩ := equivalent_weightedSumSquares_units_of_nondegenerate 3
+    (by simp [finrank_eq_card_basis b]) (Q.nondegenerate_associated_iff.mpr hQ).1
   -- Set up notation for readability
   let ⟨fw⟩ := hw
   let a₀ := w 0
