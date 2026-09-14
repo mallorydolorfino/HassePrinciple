@@ -231,10 +231,32 @@ lemma exists_nontrivial_zero {v : (ℚ_[p])ˣ} {x y z : ℚ_[p]}
 
 lemma common_root_tfae {σ ι : Type*} {f : ι → MvPolynomial σ ℤ_[p]}
     (hf : ∀ i, (f i).IsHomogeneous (f i).totalDegree) :
-    List.TFAE [∃ (z : σ → ℚ_[p]), (∃ s, z s ≠ 0)  ∧ (∀ i : ι, (f i).aeval z = 0),
+    List.TFAE [∃ (z : σ → ℚ_[p]), (∃ s, z s ≠ 0) ∧ (∀ i : ι, (f i).aeval z = 0),
       ∃ (z : σ → ℤ_[p]), z.IsPrimitive ∧ ∀ i : ι, (f i).aeval z = 0,
       ∀ {n : ℕ} (hn : 1 ≤ n),  ∃ (z : σ → ZMod (p ^ n)), z.IsPrimitive ∧
         ∀ i : ι, ((f i).map (PadicInt.toZModPow n)).aeval z = 0] := by
+  tfae_have 2 → 1 := by
+    intro h
+    obtain ⟨z, hz1, hz2⟩ := h
+    let z' := algebraMap ℤ_[p] ℚ_[p] ∘ z
+    use z'
+    have hz_ne_ze : ∃ s, z s ≠ 0 := by
+      obtain ⟨s, hs⟩ := hz1
+      use s
+      exact IsUnit.ne_zero hs
+    constructor
+    · obtain ⟨s', hs'⟩ := hz_ne_ze
+      use s'
+      exact PadicInt.coe_ne_zero.mpr hs'
+    · unfold z'
+      simp only [MvPolynomial.aeval_algebraMap_eq_zero_iff]
+      exact hz2
+  tfae_have 1 → 2 := by
+    intro h
+    obtain ⟨z, hz1, hz2⟩ := h
+    let m := Min {(z s).valuation | s : σ}
+    let z' := fun s ↦ (z s) * p
+    sorry
   sorry
 
 end Padic
