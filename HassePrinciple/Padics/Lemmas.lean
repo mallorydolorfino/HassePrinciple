@@ -82,162 +82,99 @@ lemma max_norm {x y z : ℚ_[p]} (hxyz : (‖x‖ < ‖y‖ ∨ ‖x‖ < ‖z�
   · exact hxy.le
   · exact le_trans hxz.le hzy
 
+open PadicInt in
 /-- If `p` is a prime, `x, y, z ∈ ℚ_[p]` satisfy `z ^ 2 - p * x ^ 2 - v * y ^ 2`, with `v in`
 `ℤ_[p]ˣ`, and not all of `x, y, z` are zero, then there exists a nontrivial solution to the same
 equation with `z', y', x' ∈ ℤ_[p]`, and at least one is a unit -/
 lemma exists_padicInt_sol {v : ℤ_[p]ˣ} {x y z : ℚ_[p]}
     (hnontriv : (x ≠ 0 ∨ y ≠ 0 ∨ z ≠ 0)) (hsol : z ^ 2 - p * x ^ 2 - v * y ^ 2 = 0) :
-    ∃ z' y' x' : ℤ_[p], z' ^ 2 - p * x' ^ 2 - v * y' ^ 2 = 0
-    ∧ (IsUnit z' ∨ IsUnit y' ∨ IsUnit x') := by
-  by_cases h : (‖y‖ ≤ ‖x‖ ∧ ‖z‖ ≤ ‖x‖)
+    ∃ z' y' x' : ℤ_[p], z' ^ 2 - p * x' ^ 2 - v * y' ^ 2 = 0 ∧
+    (IsUnit z' ∨ IsUnit y' ∨ IsUnit x') := by
+  by_cases h : ‖y‖ ≤ ‖x‖ ∧ ‖z‖ ≤ ‖x‖
   · let x' := x * p ^ (-x.valuation)
     let y' := y * p ^ (-x.valuation)
     let z' := z * p ^ (-x.valuation)
-    have x'_unit : ‖x'‖ = 1 := norm_mul_pow_neg_valuation_eq_one (norm_max_ne_ze h.left h.right
-      hnontriv)
+    have x'_unit : ‖x'‖ = 1 := norm_mul_pow_neg_valuation_eq_one (by aesop)
     have y'_int : ‖y'‖ ≤ 1 := norm_mul_zpow_valuation_le_one_of_norm_le h.1
     have z'_int : ‖z'‖ ≤ 1 := norm_mul_zpow_valuation_le_one_of_norm_le h.2
-    exact ⟨⟨z', z'_int⟩, ⟨y', y'_int⟩, ⟨x', le_of_eq x'_unit⟩,
-      ⟨PadicInt.coe_eq_zero.mp (by grind : z' ^ 2 - p * x' ^ 2 - v * y' ^ 2 = 0),
-      Or.inr (Or.inr (PadicInt.isUnit_iff.mpr x'_unit))⟩⟩
-  · simp only [not_and_or, not_le] at h
-    by_cases h_1 : (‖z‖ ≤ ‖y‖)
+    exact ⟨⟨z', z'_int⟩, ⟨y', y'_int⟩, ⟨x', x'_unit.le⟩,
+      ⟨coe_eq_zero.mp (by grind : z' ^ 2 - p * x' ^ 2 - v * y' ^ 2 = 0),
+      Or.inr (Or.inr (isUnit_iff.mpr x'_unit))⟩⟩
+  · by_cases h_1 : ‖z‖ ≤ ‖y‖
     · rw [or_left_comm] at hnontriv
       let x' := x * p ^ (-y.valuation)
       let y' := y * p ^ (-y.valuation)
       let z' := z * p ^(-y.valuation)
-      have y'_unit : ‖y'‖ = 1 := norm_mul_pow_neg_valuation_eq_one (norm_max_ne_ze (max_norm h h_1)
-        h_1 hnontriv)
-      have x'_int : ‖x'‖ ≤ 1 := norm_mul_zpow_valuation_le_one_of_norm_le (max_norm h h_1)
+      have : ‖x‖ ≤ ‖y‖ := by grind
+      have y'_unit : ‖y'‖ = 1 := norm_mul_pow_neg_valuation_eq_one (by aesop)
+      have x'_int : ‖x'‖ ≤ 1 := norm_mul_zpow_valuation_le_one_of_norm_le (by grind)
       have z'_int : ‖z'‖ ≤ 1 := norm_mul_zpow_valuation_le_one_of_norm_le h_1
       exact ⟨⟨z', z'_int⟩, ⟨y', le_of_eq y'_unit⟩, ⟨x', x'_int⟩,
-        ⟨PadicInt.coe_eq_zero.mp (by grind : z' ^ 2 - p * x' ^ 2 - v * y' ^ 2 = 0),
-        Or.inr (Or.inl (PadicInt.isUnit_iff.mpr y'_unit))⟩⟩
-    · simp only [not_le] at h_1
-      rw [or_comm] at h
-      rw [← or_assoc, or_right_comm, or_assoc, or_left_comm] at hnontriv
-      let x' := x * p ^ (-z.valuation)
+        ⟨coe_eq_zero.mp (by grind : z' ^ 2 - p * x' ^ 2 - v * y' ^ 2 = 0),
+        Or.inr (Or.inl (isUnit_iff.mpr y'_unit))⟩⟩
+    · let x' := x * p ^ (-z.valuation)
       let y' := y * p ^ (-z.valuation)
       let z' := z * p ^(-z.valuation)
-      have z'_unit : ‖z'‖ = 1 := norm_mul_pow_neg_valuation_eq_one (norm_max_ne_ze (max_norm h
-        h_1.le) h_1.le hnontriv)
-      have x'_int : ‖x'‖ ≤ 1 := norm_mul_zpow_valuation_le_one_of_norm_le (max_norm h h_1.le)
-      have y'_int : ‖y'‖ ≤ 1 := norm_mul_zpow_valuation_le_one_of_norm_le h_1.le
+      have : ‖x‖ ≤ ‖z‖ := by grind
+      have z'_unit : ‖z'‖ = 1 := norm_mul_pow_neg_valuation_eq_one (by aesop)
+      have x'_int : ‖x'‖ ≤ 1 := norm_mul_zpow_valuation_le_one_of_norm_le (by grind)
+      have y'_int : ‖y'‖ ≤ 1 := norm_mul_zpow_valuation_le_one_of_norm_le (not_le.mp h_1).le
       exact ⟨⟨z', le_of_eq z'_unit⟩, ⟨y', y'_int⟩, ⟨x', x'_int⟩,
-        ⟨PadicInt.coe_eq_zero.mp (by grind : z' ^ 2 - p * x' ^ 2 - v * y' ^ 2 = 0),
-        Or.inl (PadicInt.isUnit_iff.mpr z'_unit)⟩⟩
+        ⟨coe_eq_zero.mp (by grind : z' ^ 2 - p * x' ^ 2 - v * y' ^ 2 = 0),
+        Or.inl (isUnit_iff.mpr z'_unit)⟩⟩
 
+open PadicInt in
 /-- If `p` is a prime, `x, y, z in ℚ_[p]` satisfy `z ^ 2 - p * x ^ 2 - v * y ^ 2`, with `v` nonzero,
 and not all of `x, y, z` are zero, then there exists a nontrivial solution to the same equation with
 `z', y'` units in `ℤ_[p]ˣ` and `x'` in `ℤ_[p]`. -/
-lemma exists_nontrivial_units_zero {v : (ℤ_[p])ˣ} {x y z : ℚ_[p]}
+lemma exists_nontrivial_units_zero {v : ℤ_[p]ˣ} {x y z : ℚ_[p]}
     (hnontriv : (x ≠ 0 ∨ y ≠ 0 ∨ z ≠ 0)) (hsol : z ^ 2 - p * x ^ 2 - v * y ^ 2 = 0) :
     ∃ z' y' : ℤ_[p]ˣ, ∃ x' : ℤ_[p],
     (z' : ℤ_[p]) ^ 2 - p * (x') ^ 2 - v * (y' : ℤ_[p]) ^ 2 = 0 := by
   obtain ⟨z', y', x', hnewsol, hunits⟩ := exists_padicInt_sol hnontriv hsol
   have hz'_unit : IsUnit z' := by
-    by_contra
-    rw [PadicInt.not_isUnit_iff, PadicInt.norm_lt_one_iff_dvd, dvd_def] at this
-    obtain ⟨c, hc⟩ := this
-    have hy'_norm_ne_one : ‖y'‖ < 1 := by
-      rw [sub_eq_zero] at hnewsol
-      have vy'_sq_norm_ne_one : ‖(v) * (y' : ℤ_[p]) ^ 2‖ < 1 := by
-        rw [← hnewsol, hc, PadicInt.norm_lt_one_iff_dvd]
-        use (↑p * c ^ 2 - x' ^ 2)
-        ring
-      simp only [norm_mul, norm_pow, PadicInt.norm_units, one_mul, sq_lt_one_iff_abs_lt_one,
-        abs_norm] at vy'_sq_norm_ne_one
-      exact vy'_sq_norm_ne_one
-    have hx'_norm_ne_one : ‖x'‖ < 1 := by
-      rw [PadicInt.norm_lt_one_iff_dvd]
-      have vx'_sq_eq : (z' : ℤ_[p]) ^ 2 - v * (y' : ℤ_[p]) ^ 2 = ↑p * (x') ^ 2 := by
-        rw [sub_right_comm, sub_eq_zero] at hnewsol
-        exact hnewsol
-      have  px'_div_p2 : (p : ℤ_[p]) ^ 2 ∣ (p : ℤ_[p]) * (x') ^ 2 := by
-        rw [← vx'_sq_eq]
-        rw [PadicInt.norm_lt_one_iff_dvd,dvd_def] at hy'_norm_ne_one
-        obtain ⟨c', hc'⟩ := hy'_norm_ne_one
-        rw [hc, hc']
-        have hsimp' : (↑p * c) ^ 2 - ↑v * (↑p * c') ^ 2 = ↑p ^ 2 * (c ^ 2 - ↑v * c' ^ 2) := by
-          ring
-        rw [hsimp', dvd_def]
-        use (c ^ 2 - ↑v * c' ^ 2)
-      have hpx'sq : ↑p ∣ x' ^ 2 := by
-        rw [dvd_def]
-        obtain ⟨d,hd⟩ := px'_div_p2
-        use d
-        have p_ne_zediv : (p : ℤ_[p]) ∈ nonZeroDivisors ℤ_[p] := by
-          refine mem_nonZeroDivisors_of_ne_zero
-            (by apply Nat.cast_ne_zero.mpr (Ne.symm (NeZero.ne' p)))
-        nth_rw 2 [pow_two] at hd
-        rw [← mul_cancel_left_mem_nonZeroDivisors (p_ne_zediv), ← mul_assoc]
-        exact hd
-      rw [Prime.dvd_pow_iff_dvd (PadicInt.prime_p) (Ne.symm (Nat.zero_ne_add_one 1))] at hpx'sq
-      exact hpx'sq
-    have h_not_units : ¬(IsUnit z' ∨ IsUnit y' ∨ IsUnit x') := by
-      simp only [not_or]
-      constructor
-      · rw [PadicInt.not_isUnit_iff, PadicInt.norm_lt_one_iff_dvd, dvd_def]
-        use c
-      · constructor
-        · rw [← PadicInt.not_isUnit_iff] at hy'_norm_ne_one
-          exact hy'_norm_ne_one
-        · rw [← PadicInt.not_isUnit_iff] at hx'_norm_ne_one
-          exact hx'_norm_ne_one
-    contradiction
+    by_contra hz
+    have hy : ¬ IsUnit y' := by
+      have : ¬ IsUnit (p * x' ^ 2 + v * y' ^ 2) := by
+        have hz2 : ¬ IsUnit (z' ^ 2) := not_isUnit_iff.mpr (by simpa using not_isUnit_iff.mp hz)
+        convert hz2
+        grind
+      simp only [ne_eq, not_isUnit_iff, norm_lt_one_iff_dvd] at *
+      have : (p : ℤ_[p]) ∣ v * y' ^ 2 := by rwa [← dvd_add_right (b := ↑p * x' ^ 2) (by simp)]
+      simp only [Units.isUnit, IsUnit.dvd_mul_left] at this
+      rwa [Prime.dvd_pow_iff_dvd prime_p two_ne_zero] at this
+    have : ¬ IsUnit x' := by
+      rw [not_isUnit_iff, norm_lt_one_iff_dvd, ← Prime.dvd_pow_iff_dvd prime_p two_ne_zero]
+      have hp2 : (p : ℤ_[p]) ^ 2 ∣ p * x' ^ 2 := by
+        rw [show p * x' ^ 2 = z' ^ 2 - v * y' ^ 2 by grind]
+        apply dvd_sub (pow_dvd_pow_of_dvd ((norm_lt_one_iff_dvd _).mp (not_isUnit_iff.mp hz)) 2)
+        simp only [Units.isUnit, IsUnit.dvd_mul_left]
+        exact pow_dvd_pow_of_dvd ((norm_lt_one_iff_dvd _).mp (not_isUnit_iff.mp hy)) 2
+      rwa [pow_two (p : ℤ_[p]), mul_dvd_mul_iff_left (by exact_mod_cast NeZero.out)] at hp2
+    aesop
   have hy'_unit : IsUnit y' := by
-    by_contra
-    rw [PadicInt.not_isUnit_iff, PadicInt.norm_lt_one_iff_dvd, dvd_def] at this
-    obtain ⟨c, hc⟩ := this
-    have hz'_norm_ne_one : ‖z'‖ < 1 := by
-      have z'_sq_eq : (z' : ℤ_[p]) ^ 2 = p * (x') ^ 2 + (v) * (y' : ℤ_[p]) ^ 2 := by
-        rw [sub_eq_zero] at hnewsol
-        rw [← hnewsol]
-        ring
-      have z'_sq_norm_ne_one : ‖z' ^ 2‖ < 1 := by
-        rw [z'_sq_eq, PadicInt.norm_lt_one_iff_dvd, dvd_def, hc]
-        use (x' ^ 2 + ↑v * ↑p * c ^ 2)
-        ring
-      simp only [norm_pow, sq_lt_one_iff_abs_lt_one, abs_norm] at z'_sq_norm_ne_one
-      exact z'_sq_norm_ne_one
-    have hx'_norm_ne_one : ‖x'‖ < 1 := by
-      rw [PadicInt.norm_lt_one_iff_dvd]
-      have  px'_div_p2 : (p : ℤ_[p]) ^ 2 ∣ (p : ℤ_[p]) * (x') ^ 2 := by
-        rw [sub_right_comm, sub_eq_zero] at hnewsol
-        rw [← hnewsol]
-        rw [PadicInt.norm_lt_one_iff_dvd,dvd_def] at hz'_norm_ne_one
-        obtain ⟨c', hc'⟩ := hz'_norm_ne_one
-        rw [hc, hc']
-        have hsimp' : (↑p * c') ^ 2 - ↑v * (↑p * c) ^ 2 = ↑p ^ 2 * (c' ^ 2 - ↑v * c ^ 2) := by
-          ring
-        rw [hsimp', dvd_def]
-        use (c' ^ 2 - ↑v * c ^ 2)
-      have hpx'sq : ↑p ∣ x' ^ 2 := by
-        rw [dvd_def]
-        obtain ⟨d,hd⟩ := px'_div_p2
-        use d
-        have p_ne_zediv : (p : ℤ_[p]) ∈ nonZeroDivisors ℤ_[p] := by
-          refine mem_nonZeroDivisors_of_ne_zero
-            (by apply Nat.cast_ne_zero.mpr (Ne.symm (NeZero.ne' p)))
-        nth_rw 2 [pow_two] at hd
-        rw [← mul_cancel_left_mem_nonZeroDivisors (p_ne_zediv), ← mul_assoc]
-        exact hd
-      rw [Prime.dvd_pow_iff_dvd (PadicInt.prime_p) (Ne.symm (Nat.zero_ne_add_one 1))] at hpx'sq
-      exact hpx'sq
-    have h_not_units : ¬(IsUnit z' ∨ IsUnit y' ∨ IsUnit x') := by
-      simp only [not_or]
-      constructor
-      · rw [← PadicInt.not_isUnit_iff] at hz'_norm_ne_one
-        exact hz'_norm_ne_one
-      · constructor
-        · rw [PadicInt.not_isUnit_iff, PadicInt.norm_lt_one_iff_dvd, dvd_def]
-          use c
-        · rw [← PadicInt.not_isUnit_iff] at hx'_norm_ne_one
-          exact hx'_norm_ne_one
-    contradiction
-  exact ⟨⟨z', z'.inv, PadicInt.mul_inv (PadicInt.isUnit_iff.mp hz'_unit), PadicInt.inv_mul
-    (PadicInt.isUnit_iff.mp hz'_unit)⟩, ⟨y', y'.inv, PadicInt.mul_inv
-    (PadicInt.isUnit_iff.mp hy'_unit), PadicInt.inv_mul (PadicInt.isUnit_iff.mp hy'_unit)⟩, x',
+    by_contra hy
+    have hz : ¬ IsUnit z' := by
+      have : ¬ IsUnit (z' ^ 2 - ↑p * x' ^ 2) := by
+        have hy2 : ¬ IsUnit (↑v * y' ^ 2) := not_isUnit_iff.mpr
+          (by simpa using not_isUnit_iff.mp hy)
+        convert hy2
+        grind
+      rw [not_isUnit_iff, norm_lt_one_iff_dvd, ← Prime.dvd_pow_iff_dvd prime_p two_ne_zero]
+      rw [not_isUnit_iff, norm_lt_one_iff_dvd] at this
+      simpa using dvd_iff_dvd_of_dvd_sub this
+    have : ¬ IsUnit x' := by
+      rw [not_isUnit_iff, norm_lt_one_iff_dvd, ← Prime.dvd_pow_iff_dvd prime_p two_ne_zero]
+      have hp2 : (p : ℤ_[p]) ^ 2 ∣ p * x' ^ 2 := by
+        rw [show p * x' ^ 2 = z' ^ 2 - v * y' ^ 2 by grind]
+        apply dvd_sub (pow_dvd_pow_of_dvd ((norm_lt_one_iff_dvd _).mp (not_isUnit_iff.mp hz)) 2)
+        simp only [Units.isUnit, IsUnit.dvd_mul_left]
+        exact pow_dvd_pow_of_dvd ((norm_lt_one_iff_dvd _).mp (not_isUnit_iff.mp hy)) 2
+      rwa [pow_two (p : ℤ_[p]), mul_dvd_mul_iff_left (by exact_mod_cast NeZero.out)] at hp2
+    aesop
+  exact ⟨⟨z', z'.inv, mul_inv (isUnit_iff.mp hz'_unit), inv_mul
+    (isUnit_iff.mp hz'_unit)⟩, ⟨y', y'.inv, mul_inv
+    (isUnit_iff.mp hy'_unit), inv_mul (isUnit_iff.mp hy'_unit)⟩, x',
     hnewsol⟩
 
 lemma common_root_tfae {σ ι : Type*} {f : ι → MvPolynomial σ ℤ_[p]}
