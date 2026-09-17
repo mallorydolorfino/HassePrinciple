@@ -66,22 +66,6 @@ lemma norm_mul_zpow_valuation_le_one_of_norm_le {x y : ℚ_[p]} (hxy : ‖y‖ �
   rw [mul_inv_le_iff₀ (by simp [hx0])]
   simp [hxy]
 
-/-- helper lemma: if `x,y,z ∈ ℚ_[p]`, `‖y‖ ≤ ‖x‖ ∧ ‖z‖ ≤ ‖x‖,` and `(x,y,z) ≠ (0,0,0),` then
-`x ≠ 0` -/
-lemma norm_max_ne_ze {x y z : ℚ_[p]} (hxy : ‖y‖ ≤ ‖x‖) (hxz : ‖z‖ ≤ ‖x‖)
-    (hnontriv : (x ≠ 0 ∨ y ≠ 0 ∨ z ≠ 0)) : x ≠ 0 := by
-  intro hx0
-  simp [hx0] at hxy hxz
-  tauto
-
-/-- helper lemma:  if `x, y, z ∈ ℚ_[p]` and `(‖x‖ < ‖y‖ ∨ ‖x‖ < ‖z‖) ∧ ‖z‖ ≤ ‖y‖,` then
-`‖x‖ ≤ ‖y‖ ∧ ‖z‖ ≤ ‖y‖.` -/
-lemma max_norm {x y z : ℚ_[p]} (hxyz : (‖x‖ < ‖y‖ ∨ ‖x‖ < ‖z‖)) (hzy : ‖z‖ ≤ ‖y‖) :
-    ‖x‖ ≤ ‖y‖ := by
-  rcases hxyz with hxy | hxz
-  · exact hxy.le
-  · exact le_trans hxz.le hzy
-
 open PadicInt in
 /-- If `p` is a prime, `x, y, z ∈ ℚ_[p]` satisfy `z ^ 2 - p * x ^ 2 - v * y ^ 2`, with `v in`
 `ℤ_[p]ˣ`, and not all of `x, y, z` are zero, then there exists a nontrivial solution to the same
