@@ -254,13 +254,28 @@ lemma common_root_tfae {σ ι : Type*} {f : ι → MvPolynomial σ ℤ_[p]}
   tfae_have 1 → 2 := by
     intro h
     obtain ⟨z, hz1, hz2⟩ := h
-    let m := Min {(z s).valuation | s : σ}
-    let z' := fun s ↦ (z s) * p
+    have hiota : {i | i : ι}.Nonempty := by
+      sorry
+    let hiota2 : ∃ (i : ι), i ∈ {i | i : ι} := by
+      exact Set.nonempty_def.mp hiota
+    obtain ⟨i, hi⟩ := hiota2
+    let τ := (f i).vars
+    let set := {(z s).valuation | s : σ}
+    have h1 : {(z s).valuation | s : σ}.Finite := by
+      sorry
+    have hsig : {s | s : σ}.Finite := by
+
+      sorry
+    have h2 : {(z s).valuation | s : σ}.Nonempty := by
+      sorry
+    have hmin := Set.Finite.exists_minimal h1 h2
+    obtain ⟨m, hm⟩ := hmin
+    let z' := fun s ↦ (z s) * p ^ (- m)
     sorry
   sorry
 
-end Padic
 
+end Padic
 
 
 /-! # Applications and Multivariable Hensel's Lemma. -/
