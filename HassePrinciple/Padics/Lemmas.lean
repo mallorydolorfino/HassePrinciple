@@ -116,45 +116,34 @@ lemma exists_nontrivial_units_zero {v : ℤ_[p]ˣ} {x y z : ℚ_[p]}
     ∃ z' y' : ℤ_[p]ˣ, ∃ x' : ℤ_[p],
     (z' : ℤ_[p]) ^ 2 - p * (x') ^ 2 - v * (y' : ℤ_[p]) ^ 2 = 0 := by
   obtain ⟨z', y', x', hnewsol, hunits⟩ := exists_padicInt_sol hnontriv hsol
+  have not_unit_x_of_not_unit_y_z (hy : ¬ IsUnit y') (hz : ¬ IsUnit z') : ¬ IsUnit x' := by
+    rw [not_isUnit_iff, norm_lt_one_iff_dvd, ← Prime.dvd_pow_iff_dvd prime_p two_ne_zero]
+    have hp2 : (p : ℤ_[p]) ^ 2 ∣ p * x' ^ 2 := by
+      rw [show p * x' ^ 2 = z' ^ 2 - v * y' ^ 2 by grind]
+      apply dvd_sub (pow_dvd_pow_of_dvd ((norm_lt_one_iff_dvd _).mp (not_isUnit_iff.mp hz)) 2)
+      simp [pow_dvd_pow_of_dvd ((norm_lt_one_iff_dvd _).mp (not_isUnit_iff.mp hy)) 2]
+    rwa [pow_two (p : ℤ_[p]), mul_dvd_mul_iff_left (by exact_mod_cast NeZero.out)] at hp2
   have hz'_unit : IsUnit z' := by
     by_contra hz
     have hy : ¬ IsUnit y' := by
       have : ¬ IsUnit (p * x' ^ 2 + v * y' ^ 2) := by
         have hz2 : ¬ IsUnit (z' ^ 2) := not_isUnit_iff.mpr (by simpa using not_isUnit_iff.mp hz)
-        convert hz2
         grind
-      simp only [ne_eq, not_isUnit_iff, norm_lt_one_iff_dvd] at *
-      have : (p : ℤ_[p]) ∣ v * y' ^ 2 := by rwa [← dvd_add_right (b := ↑p * x' ^ 2) (by simp)]
-      simp only [Units.isUnit, IsUnit.dvd_mul_left] at this
-      rwa [Prime.dvd_pow_iff_dvd prime_p two_ne_zero] at this
-    have : ¬ IsUnit x' := by
-      rw [not_isUnit_iff, norm_lt_one_iff_dvd, ← Prime.dvd_pow_iff_dvd prime_p two_ne_zero]
-      have hp2 : (p : ℤ_[p]) ^ 2 ∣ p * x' ^ 2 := by
-        rw [show p * x' ^ 2 = z' ^ 2 - v * y' ^ 2 by grind]
-        apply dvd_sub (pow_dvd_pow_of_dvd ((norm_lt_one_iff_dvd _).mp (not_isUnit_iff.mp hz)) 2)
-        simp only [Units.isUnit, IsUnit.dvd_mul_left]
-        exact pow_dvd_pow_of_dvd ((norm_lt_one_iff_dvd _).mp (not_isUnit_iff.mp hy)) 2
-      rwa [pow_two (p : ℤ_[p]), mul_dvd_mul_iff_left (by exact_mod_cast NeZero.out)] at hp2
+      simp only [not_isUnit_iff, norm_lt_one_iff_dvd] at *
+      have : (p : ℤ_[p]) ∣ v * y' ^ 2 := by rwa [← dvd_add_right (b := p * x' ^ 2) (by simp)]
+      simp [Prime.dvd_pow_iff_dvd prime_p two_ne_zero] at this
+      aesop
     aesop
   have hy'_unit : IsUnit y' := by
     by_contra hy
     have hz : ¬ IsUnit z' := by
-      have : ¬ IsUnit (z' ^ 2 - ↑p * x' ^ 2) := by
-        have hy2 : ¬ IsUnit (↑v * y' ^ 2) := not_isUnit_iff.mpr
+      have : ¬ IsUnit (z' ^ 2 - p * x' ^ 2) := by
+        have hy2 : ¬ IsUnit (v * y' ^ 2) := not_isUnit_iff.mpr
           (by simpa using not_isUnit_iff.mp hy)
-        convert hy2
         grind
       rw [not_isUnit_iff, norm_lt_one_iff_dvd, ← Prime.dvd_pow_iff_dvd prime_p two_ne_zero]
       rw [not_isUnit_iff, norm_lt_one_iff_dvd] at this
       simpa using dvd_iff_dvd_of_dvd_sub this
-    have : ¬ IsUnit x' := by
-      rw [not_isUnit_iff, norm_lt_one_iff_dvd, ← Prime.dvd_pow_iff_dvd prime_p two_ne_zero]
-      have hp2 : (p : ℤ_[p]) ^ 2 ∣ p * x' ^ 2 := by
-        rw [show p * x' ^ 2 = z' ^ 2 - v * y' ^ 2 by grind]
-        apply dvd_sub (pow_dvd_pow_of_dvd ((norm_lt_one_iff_dvd _).mp (not_isUnit_iff.mp hz)) 2)
-        simp only [Units.isUnit, IsUnit.dvd_mul_left]
-        exact pow_dvd_pow_of_dvd ((norm_lt_one_iff_dvd _).mp (not_isUnit_iff.mp hy)) 2
-      rwa [pow_two (p : ℤ_[p]), mul_dvd_mul_iff_left (by exact_mod_cast NeZero.out)] at hp2
     aesop
   exact ⟨⟨z', z'.inv, mul_inv (isUnit_iff.mp hz'_unit), inv_mul
     (isUnit_iff.mp hz'_unit)⟩, ⟨y', y'.inv, mul_inv
