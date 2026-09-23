@@ -98,7 +98,7 @@ lemma exists_padicInt_sol {v : ℤ_[p]ˣ} {x y z : ℚ_[p]}
         Or.inr (Or.inl (isUnit_iff.mpr y'_unit))⟩⟩
     · let x' := x * p ^ (-z.valuation)
       let y' := y * p ^ (-z.valuation)
-      let z' := z * p ^(-z.valuation)
+      let z' := z * p ^ (-z.valuation)
       have : ‖x‖ ≤ ‖z‖ := by grind
       have z'_unit : ‖z'‖ = 1 := norm_mul_pow_neg_valuation_eq_one (by aesop)
       have x'_int : ‖x'‖ ≤ 1 := norm_mul_zpow_valuation_le_one_of_norm_le (by grind)
