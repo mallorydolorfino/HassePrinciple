@@ -230,7 +230,7 @@ lemma exists_nontrivial_zero {v : (ℚ_[p])ˣ} {x y z : ℚ_[p]}
 
 
 lemma common_root_tfae {σ ι : Type*} {f : ι → MvPolynomial σ ℤ_[p]}
-    (hf : ∀ i, (f i).IsHomogeneous (f i).totalDegree) :
+    (hf : ∀ i, (f i).IsHomogeneous (f i).totalDegree) (hsigma : Finite σ) :
     List.TFAE [∃ (z : σ → ℚ_[p]), (∃ s, z s ≠ 0) ∧ (∀ i : ι, (f i).aeval z = 0),
       ∃ (z : σ → ℤ_[p]), z.IsPrimitive ∧ ∀ i : ι, (f i).aeval z = 0,
       ∀ {n : ℕ} (hn : 1 ≤ n),  ∃ (z : σ → ZMod (p ^ n)), z.IsPrimitive ∧
@@ -254,19 +254,12 @@ lemma common_root_tfae {σ ι : Type*} {f : ι → MvPolynomial σ ℤ_[p]}
   tfae_have 1 → 2 := by
     intro h
     obtain ⟨z, hz1, hz2⟩ := h
-    have hiota : {i | i : ι}.Nonempty := by
-      sorry
-    let hiota2 : ∃ (i : ι), i ∈ {i | i : ι} := by
-      exact Set.nonempty_def.mp hiota
-    obtain ⟨i, hi⟩ := hiota2
-    let τ := (f i).vars
-    let set := {(z s).valuation | s : σ}
     have h1 : {(z s).valuation | s : σ}.Finite := by
-      sorry
-    have hsig : {s | s : σ}.Finite := by
-
-      sorry
+      exact Set.toFinite {x | ∃ s, (z s).valuation = x}
+    have hnonempty : Nonempty σ := by sorry
     have h2 : {(z s).valuation | s : σ}.Nonempty := by
+      refine Set.nonempty_coe_sort.mp ?_
+
       sorry
     have hmin := Set.Finite.exists_minimal h1 h2
     obtain ⟨m, hm⟩ := hmin
