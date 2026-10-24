@@ -265,14 +265,17 @@ lemma common_root_tfae {σ ι : Type*} {f : ι → MvPolynomial σ ℤ_[p]}
     obtain ⟨z, hz1, hz2⟩ := h
     have h1 : {(z s).valuation | s : σ}.Finite := by
       exact Set.toFinite {x | ∃ s, (z s).valuation = x}
-    have hnonempty : Nonempty σ := by sorry
+    have hnonempty : Nonempty σ := by
+      exact Exists.nonempty hz1
     have h2 : {(z s).valuation | s : σ}.Nonempty := by
-      refine Set.nonempty_coe_sort.mp ?_
-
-      sorry
+      obtain ⟨s',hzs⟩ := hz1
+      simp only[Set.nonempty_def]
+      use (z s').valuation
+      refine Set.mem_ofPred.mpr ?_
+      use s'
     have hmin := Set.Finite.exists_minimal h1 h2
     obtain ⟨m, hm⟩ := hmin
-    let z' := fun s ↦ (z s) * p ^ (- m)
+    let z' := fun s ↦ (((z s) * p ^ (- m)) : ℤ_[p])
     sorry
   sorry
 
