@@ -237,6 +237,24 @@ lemma exists_nontrivial_zero {v : (ℚ_[p])ˣ} {x y z : ℚ_[p]}
   use z'', y'', x''
   apply hnewsol
 
+lemma mult_ppow_neg_min_val_is_int {y : ℚ_[p]} {m : ℤ} (hxmin : m ≤ y.valuation) :
+    ‖y * p ^ (-m)‖ ≤ 1 := by
+  by_cases (y = 0)
+  · expose_names
+    rw [h]
+    simp
+  · expose_names
+    rw [← ne_eq] at h
+    simp only [zpow_neg, norm_mul, norm_eq_zpow_neg_valuation h, norm_inv, norm_p_zpow, inv_inv]
+    rw [← zpow_neg, ← zpow_add₀]
+    · have hpowneg : -y.valuation + m ≤ 0 := by
+        simp only [neg_add_le_iff_le_add, add_zero]
+        exact hxmin
+      have hp : (1 : ℝ) ≤ ↑p := by
+        refine Nat.one_le_cast_iff_ne_zero.mpr ?_
+        apply NeZero.out
+      apply zpow_le_one_of_nonpos₀ hp hpowneg
+    · apply NeZero.out
 
 lemma common_root_tfae {σ ι : Type*} {f : ι → MvPolynomial σ ℤ_[p]}
     (hf : ∀ i, (f i).IsHomogeneous (f i).totalDegree) (hsigma : Finite σ) :
@@ -275,7 +293,14 @@ lemma common_root_tfae {σ ι : Type*} {f : ι → MvPolynomial σ ℤ_[p]}
       use s'
     have hmin := Set.Finite.exists_minimal h1 h2
     obtain ⟨m, hm⟩ := hmin
-    let z' := fun s ↦ (((z s) * p ^ (- m)) : ℤ_[p])
+    let m := sInf {(z s).valuation | s : σ}
+    have hzs_powp_int {s : σ} : ‖(z s) * p ^ (-m)‖ ≤ 1 := by
+      have hzs : m ≤ (z s).valuation := by
+
+        sorry
+      apply mult_ppow_neg_min_val_is_int (hzs)
+    let z' : σ → ℤ_[p] := fun s ↦ ⟨(z s) * p ^ (- m), hzs_powp_int⟩
+    use z'
     sorry
   sorry
 
